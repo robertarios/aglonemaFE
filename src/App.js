@@ -1,8 +1,10 @@
-import './App.css';
+import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import Landing from './pages/Landing';
-import Nav from './components/Nav';
-import Footer from './components/Footer';
+import Landing from "./pages/Landing";
+import Login from "./pages/Login"; // Import the Login component
+import Signup from "./pages/Signup"; // Import the Signup component
+import Nav from "./components/Nav";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -10,9 +12,8 @@ function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<Landing />} />
-        {/* Add other routes as needed */}
       </Routes>
-      <Footer /> {/* Footer includes NewsletterCard, so only Footer is added here */}
+      <Footer />
     </div>
   );
 }
