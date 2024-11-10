@@ -1,15 +1,7 @@
 import { useState } from "react";
-import Logo from "../assets/logo.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTachometerAlt,
-  faBox,
-  faDatabase,
-  faWarehouse,
-  faFileAlt,
-  faCogs,
-  faChevronDown, // Tambahkan ikon panah ke bawah
-} from "@fortawesome/free-solid-svg-icons";
+import Newsidebar from "../components/NewSidebar"; // Mengimpor Sidebar yang baru
+import Navbar from "../components/Navbar";
+import Iconverify from "../assets/verifycard.png";
 
 function EditProfile() {
   const [name, setName] = useState("");
@@ -36,148 +28,122 @@ function EditProfile() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-full bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 h-full bg-[#EDF3FF] shadow flex-col justify-start items-start">
-        <div className="w-64 bg-[#EDF3FF] shadow flex-col justify-start items-start">
-          {/* Logo */}
-          <div className="px-4 py-4 bg-[#edf3ff] flex justify-center items-center">
-            <img className="relative left-0 top-0" src={Logo} />
+      <Newsidebar /> {/* Menggunakan Sidebar yang sudah terpisah */}
+      {/* Main Content */}
+      <div className="flex-1">
+        <Navbar />
+        <div className="flex">
+          {/* Left Side: Menu Edit Profile */}
+          <div className="w-1/4 py-10 mr-6">
+            <ul>
+              <li className="mx-8 p-3 text-start bg-white border-l-4 border-[#2f6d64]">
+                <a href="#name" className="pl-4 text-[#2f6d64]">
+                  Edit Profile
+                </a>
+              </li>
+
+              <li className="mx-8 p-3 text-start ">
+                <a href="#email" className="pl-4 text-[#2f6d64]">
+                  Spesifikasi Tambahan
+                </a>
+              </li>
+              <li className=" mx-8 p-3 text-start ">
+                <a href="#email" className="pl-4 text-[#2f6d64]">
+                  Pengaturan Kedaluarsa
+                </a>
+              </li>
+              <li className=" mx-8 p-3 text-start ">
+                <a href="#email" className="pl-4 text-[#2f6d64]">
+                  Ubah Kata Sandi
+                </a>
+              </li>
+              <li className=" mx-8 p-3 text-start ">
+                <a href="#email" className="pl-4 text-[#2f6d64]">
+                  Reset Data
+                </a>
+              </li>
+            </ul>
+            <div className="mx-8 mt-8 p-6  bg-white rounded-lg shadow-lg flex flex-col items-center">
+              {/* Gambar */}
+              <img
+                src={Iconverify} // Ganti URL ini dengan URL gambar yang sesuai
+                alt="Verification"
+                className=" my-6"
+              />
+
+              {/* Teks */}
+              <h2 className="text-xl justify-start font-semibold text-gray-700 mb-4 self-start">
+                Verifikasi Akunmu
+              </h2>
+              <p className="text-gray-500 text-start text-sm mb-8">
+                Silakan verifikasi akun Anda untuk mendapatkan akses penuh ke
+                layanan kami.
+              </p>
+
+              {/* Tombol Verifikasi */}
+              <button className="mt-auto items-start bg-blue-500 text-white py-2 px-6 self-start rounded hover:bg-blue-600">
+                Verifikasi
+              </button>
+            </div>
           </div>
 
-          {/* Sidebar Menu */}
-          <div className="h-[649.09px] bg-[#EDF3FF]">
-            <div
-              className={`pt-6 pb-8 flex justify-start items-center pl-5 pr-4 py-[13.51px] bg-[#DAE6FF]`}
+          {/* Right Side: Form and Cards */}
+          <div className="flex-1">
+            <h1 className="text-2xl font-semibold mb-4">Edit Profile</h1>
+
+            {/* Form */}
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white p-6 rounded shadow-md mb-6"
             >
-              <div className={`text-sm font-normal leading-[21px]`}>
-                Nama Pengguna
+              <InputField
+                label="Name"
+                value={name}
+                onChange={handleNameChange}
+              />
+              <InputField
+                label="Email"
+                value={email}
+                onChange={handleEmailChange}
+              />
+              <InputField
+                label="Phone Number"
+                value={phoneNumber}
+                onChange={handlePhoneNumberChange}
+              />
+              <TextareaField
+                label="Address"
+                value={address}
+                onChange={handleAddressChange}
+              />
+              <FileInput
+                label="Upload Profile Picture"
+                onChange={handleLogoChange}
+              />
+              <button
+                type="submit"
+                className="bg-blue-500 text-white py-2 px-4 rounded"
+              >
+                Save Changes
+              </button>
+            </form>
+
+            {/* Cards Section */}
+            <div className="flex space-x-6">
+              <div className="w-1/2 bg-white shadow-md rounded-lg p-6">
+                <h2 className="text-xl font-semibold mb-4">Card 1</h2>
+                <p>This is the first card content.</p>
               </div>
-              <div className="ml-auto">
-                <FontAwesomeIcon
-                  icon={faChevronDown}
-                  className={`text-sm`}
-                />
+              <div className="w-1/2 bg-white shadow-md rounded-lg p-6">
+                <h2 className="text-xl font-semibold mb-4">Card 2</h2>
+                <p>This is the second card content.</p>
               </div>
             </div>
-
-            <SidebarItem icon={faTachometerAlt} label="Dashboard" />
-            <DropdownMenu icon={faBox} label="Produk" />
-            <DropdownMenu icon={faDatabase} label="Pusat Data" />
-            <DropdownMenu icon={faWarehouse} label="Gudang" />
-            <DropdownMenu icon={faFileAlt} label="Laporan" />
-            <SidebarItem icon={faCogs} label="Pengaturan" active />
           </div>
         </div>
       </div>
-
-      {/* Main Content */}
-      <div className="flex-1 p-6">
-        <h1 className="text-2xl font-semibold mb-4">Edit Profile</h1>
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-6 rounded shadow-md"
-        >
-          <InputField label="Name" value={name} onChange={handleNameChange} />
-          <InputField
-            label="Email"
-            value={email}
-            onChange={handleEmailChange}
-          />
-          <InputField
-            label="Phone Number"
-            value={phoneNumber}
-            onChange={handlePhoneNumberChange}
-          />
-          <TextareaField
-            label="Address"
-            value={address}
-            onChange={handleAddressChange}
-          />
-          <FileInput
-            label="Upload Profile Picture"
-            onChange={handleLogoChange}
-          />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white py-2 px-4 rounded"
-          >
-            Save Changes
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function SidebarItem({ icon, label, active }) {
-  return (
-    <div
-      className={`h-[58.02px] py-[5px] flex justify-start items-center pl-5 pr-4 py-[13.51px] ${
-        active ? "bg-[#457468]/40 border-l-4 border-[#16423c]" : ""
-      }`}
-    >
-      <div className="w-10 flex justify-start items-center">
-        <FontAwesomeIcon
-          icon={icon}
-          className={`text-sm ${active ? "text-[#16423c]" : "text-[#2f6d64]"}`}
-        />
-      </div>
-      <div
-        className={`text-sm font-normal leading-[21px] ${
-          active ? "text-[#16423c]" : "text-[#2f6d64]"
-        }`}
-      >
-        {label}
-      </div>
-    </div>
-  );
-}
-
-function DropdownMenu({ icon, label }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleDropdown = () => setIsOpen(!isOpen);
-
-  return (
-    <div>
-      <div
-        className={`h-[58.02px] py-[5px] flex justify-start items-center pl-5 pr-4 py-[13.51px] cursor-pointer ${
-          isOpen ? "bg-[#457468]/40 border-l-4 border-[#16423c]" : ""
-        }`}
-        onClick={toggleDropdown}
-      >
-        <div className="w-10 flex justify-start items-center">
-          <FontAwesomeIcon
-            icon={icon}
-            className={`text-sm ${
-              isOpen ? "text-[#16423c]" : "text-[#2f6d64]"
-            }`}
-          />
-        </div>
-        <div
-          className={`text-sm font-normal leading-[21px] ${
-            isOpen ? "text-[#16423c]" : "text-[#2f6d64]"
-          }`}
-        >
-          {label}
-        </div>
-        <div className="ml-auto">
-          <FontAwesomeIcon
-            icon={faChevronDown}
-            className={`text-sm ${
-              isOpen ? "text-[#16423c]" : "text-[#2f6d64]"
-            }`}
-          />
-        </div>
-      </div>
-      {isOpen && (
-        <div className="pl-12 bg-[#f4f7fb]">
-          <SidebarItem label="Sub-menu 1" />
-          <SidebarItem label="Sub-menu 2" />
-          <SidebarItem label="Sub-menu 3" />
-        </div>
-      )}
     </div>
   );
 }

@@ -1,8 +1,6 @@
 import './App.css';
 import { Routes, Route } from "react-router-dom";
 import Landing from './pages/Landing';
-import Nav from './components/Nav';
-import Footer from './components/Footer';
 import EditProfile from './pages/EditProfile';
 import '@fontsource/sora';
 import DashboardPage from './pages/DashboardPage';

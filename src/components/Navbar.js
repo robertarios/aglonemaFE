@@ -4,7 +4,7 @@ import { HiChevronDown } from "react-icons/hi";
 
 const Navbar = () => {
   return (
-    <div className="flex items-center justify-between px-4 py-2 bg-white shadow-md">
+    <div className="flex items-center justify-between px-8 py-6 bg-white shadow-md">
       {/* Left Side - Hamburger Icon and Dashboard Text */}
       <div className="flex items-center">
         <FaBars className="text-gray-700 mr-3 cursor-pointer" />
