@@ -1,14 +1,55 @@
 import React from "react";
-import warehouseImage from '../assets/gudangan.png'; // Ensure path to your image is correct
-import automationImage from '../assets/gudangan1.png'; // Ensure path to your image is correct
-
-// Import your custom icons
+import warehouseImage from '../assets/gudangan.png';
+import automationImage from '../assets/gudangan1.png';
+import logo from '../assets/logo.png';
 import affordableIcon from '../assets/comp1.png';
 import flexibleIcon from '../assets/comp2.png';
 import qualityIcon from '../assets/comp3.png';
+import {
+  FaInstagram,
+  FaFacebook,
+  FaTwitter,
+  FaLinkedin,
+  FaTiktok,
+  FaYoutube,
+} from "react-icons/fa";
 
 const Landing = () => {
   return (
+    <div className="text-center">
+
+      {/* Navbar Section */}
+      <div className="relative fixed w-full">
+      <nav className="bg-[#42675D] px-8 py-4 flex justify-between items-center">
+        <div className="flex items-center">
+          <img src={logo} alt="Aglostok Logo" className="h-10 mr-2" />
+        </div>
+        
+        <div className="flex items-center space-x-6">
+          {/* Navigation Links */}
+          <ul className="flex space-x-6 text-white">
+            <li>
+              <a href="#products" className="hover:underline">
+                Produk
+              </a>
+            </li>
+            <li>
+              <a href="#about" className="hover:underline">
+                Tentang
+              </a>
+            </li>
+          </ul>
+
+          <button className="bg-white text-[#42675D] font-bold py-2 px-4 rounded-lg hover:bg-gray-100">
+            Login
+          </button>
+          <button className="bg-[#2F4A3B] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#3b5b4a]">
+            Sign Up
+          </button>
+        </div>
+      </nav>
+    </div>
+
     <div className="text-center">
       {/* Hero Section */}
       <section className="bg-[#42675D] text-white px-8 py-12">
@@ -70,7 +111,7 @@ const Landing = () => {
       </section>
 
       {/* Why Choose Aglostok Section */}
-      <section className="bg-white py-8 px-8">
+      <section className="bg-white py-8 px-8 pb-20">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-semibold">Kenapa Harus Dengan Aglostok?</h2>
           <p className="text-gray-600 mt-4 mb-8">
@@ -109,6 +150,261 @@ const Landing = () => {
           </div>
         </div>
       </section>
+    </div>
+
+      {/* Footer Section */}
+      <footer
+        style={{
+          backgroundColor: "#466b5d",
+          color: "white",
+          padding: "40px",
+          position: "relative",
+        }}
+      >
+        {/* Newsletter Card */}
+        <div style={{ marginTop: "-50px", marginBottom: "20px" }}>
+          {/* Newsletter Card Section */}
+      <div
+        className="newsletter-container"
+        style={{
+          backgroundColor: '#62AA99',
+          padding: '30px',
+          borderRadius: '15px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '-60px',
+          position: 'relative',
+          zIndex: 1,
+          maxWidth: '80%',
+          margin: '0 auto',
+          transform: 'translateY(-30%)',
+        }}
+      >
+        {}
+        <div className="newsletter-text" style={{ flex: 1, textAlign: 'left', color: 'white', paddingRight: '20px' }}>
+          <h1 style={{ fontSize: '34px', margin: 0 }}>Dapatkan Berita Terbaru</h1>
+          <p style={{ fontSize: '14px', margin: 0 }}>
+            Jadi yang pertama tahu info terbaru soal fitur, promosi, dan berbagai update lainnya dari AgloStok
+          </p>
+        </div>
+
+        {}
+        <div
+          className="newsletter-input-container"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'white',
+            borderRadius: '30px',
+            padding: '5px 10px',
+          }}
+        >
+          <input
+            type="email"
+            placeholder="Masukkan email kamu"
+            style={{
+              color: 'black',
+              backgroundColor: 'transparent',
+              padding: '10px',
+              border: 'none',
+              outline: 'none',
+              borderRadius: '20px',
+              width: '200px',
+              marginRight: '10px',
+            }}
+          />
+          <button
+            style={{
+              padding: '10px 20px',
+              borderRadius: '20px',
+              border: 'none',
+              backgroundColor: '#1b423b',
+              color: 'white',
+              cursor: 'pointer',
+            }}
+          >
+            Berlangganan Sekarang
+          </button>
+        </div>
+      </div>
+        </div>
+
+        {/* Footer Main Content */}
+        <div
+          className="footer-container"
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            paddingTop: "20px",
+            borderTop: "1px solid #3a5c4c",
+            flexWrap: "wrap",
+          }}
+        >
+          {/* Logo and Contact Info */}
+          <div className="footer-column" style={{ textAlign: "left" }}>
+            <img
+              src={logo}
+              alt="AgloStok Logo"
+              style={{ width: "100px", marginBottom: "20px" }}
+            />
+            <p>Layanan Pengaduan Konsumen :</p>
+            <a
+              href="mailto:customer@aglostok.com"
+              style={{ color: "#7c948c", textDecoration: "none" }}
+            >
+              customer@aglostok.com
+            </a>
+          </div>
+
+          {/* Other Links - About, Platform, Help */}
+          <div className="footer-column" style={{ textAlign: "left" }}>
+            <h4 style={{ fontSize: "18px", marginBottom: "10px" }}>AgloStok</h4>
+            <ul style={{ listStyle: "none", padding: "0" }}>
+              <li>
+                <a
+                  href="#about"
+                  style={{ color: "#7c948c", textDecoration: "none" }}
+                >
+                  Tentang Kami
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#fulfillment"
+                  style={{ color: "#7c948c", textDecoration: "none" }}
+                >
+                  Simulasi Biaya Fulfillment
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  style={{ color: "#7c948c", textDecoration: "none" }}
+                >
+                  Kontak Kami
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="footer-column" style={{ textAlign: "left" }}>
+            <h4 style={{ fontSize: "18px", marginBottom: "10px" }}>Platform</h4>
+            <ul style={{ listStyle: "none", padding: "0" }}>
+              <li>
+                <a
+                  href="#partner"
+                  style={{ color: "#7c948c", textDecoration: "none" }}
+                >
+                  Jadi Mitra
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#partners"
+                  style={{ color: "#7c948c", textDecoration: "none" }}
+                >
+                  Mitra Kami
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#others"
+                  style={{ color: "#7c948c", textDecoration: "none" }}
+                >
+                  Mitra Lainnya
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#warehouse"
+                  style={{ color: "#7c948c", textDecoration: "none" }}
+                >
+                  Warehouse Management System
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#seller"
+                  style={{ color: "#7c948c", textDecoration: "none" }}
+                >
+                  Seller Management System
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="footer-column" style={{ textAlign: "left" }}>
+            <h4 style={{ fontSize: "18px", marginBottom: "10px" }}>
+              Bantuan & Panduan
+            </h4>
+            <ul style={{ listStyle: "none", padding: "0" }}>
+              <li>
+                <a
+                  href="#faq"
+                  style={{ color: "#7c948c", textDecoration: "none" }}
+                >
+                  FAQ
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#terms"
+                  style={{ color: "#7c948c", textDecoration: "none" }}
+                >
+                  Syarat & Ketentuan
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#privacy"
+                  style={{ color: "#7c948c", textDecoration: "none" }}
+                >
+                  Kebijakan Privasi
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Footer Bottom Section */}
+        <div
+          className="footer-bottom"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingTop: "20px",
+            borderTop: "1px solid #3a5c4c",
+            flexWrap: "wrap",
+          }}
+        >
+          <p style={{ marginBottom: "10px" }}>
+            Copyright © 2024 By Aglostok. All Rights Reserved.
+          </p>
+          <div
+            className="footer-links"
+            style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}
+          >
+            <a href="#instagram" style={{ color: "white" }}>
+              <FaInstagram size={20} />
+            </a>
+            <a href="#facebook" style={{ color: "white" }}>
+              <FaFacebook size={20} />
+            </a>
+            <a href="#twitter" style={{ color: "white" }}>
+              <FaTwitter size={20} />
+            </a>
+            <a href="#linkedin" style={{ color: "white" }}>
+              <FaLinkedin size={20} />
+            </a>
+            <a href="#tiktok" style={{ color: "white" }}>
+              <FaTiktok size={20} />
+            </a>
+            <a href="#youtube" style={{ color: "white" }}>
+              <FaYoutube size={20} />
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
