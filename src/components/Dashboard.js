@@ -32,9 +32,9 @@ const Dashboard = () => {
       </div>
 
       {/* Main Dashboard Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Performa Stock Section */}
-        <div className="bg-white p-6 rounded-lg shadow-md col-span-1">
+      <div className="space-y-6">
+        {/* Performa Stock Section - Full Width */}
+        <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold">Performa Stock</h2>
             <div className="flex items-center text-sm text-gray-500">
@@ -47,20 +47,48 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Popular Product and Non-Productive Stock Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 col-span-1">
+        {/* Popular Product and Non-Productive Stock Section - Two Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Popular Product */}
-          <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+          <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold mb-4">Produk Populer</h2>
-            <FaChartBar className="text-5xl text-blue-500 mb-2" />
-            <p className="text-gray-500 text-sm">Belum ada data</p>
+            <table className="w-full text-left text-gray-500">
+              <thead>
+                <tr>
+                  <th className="py-2">Nama Barang</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="py-8 text-center">
+                    {/* <FaChartBar className="text-5xl text-blue-500 mb-2" /> */}
+                    <p className="text-gray-500 text-sm">Belum ada data</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           {/* Non-Productive Stock */}
-          <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+          <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold mb-4">Stok Tidak Produktif</h2>
-            <FaBoxOpen className="text-5xl text-blue-500 mb-2" />
-            <p className="text-gray-500 text-sm">Belum ada data</p>
+            <table className="w-full text-left text-gray-500">
+              <thead>
+                <tr>
+                  <th className="py-2">Nama Barang</th>
+                  <th className="py-2">Lama Stok</th>
+                  <th className="py-2">Indeks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="py-8 text-center" colSpan="3">
+                    {/* <FaBoxOpen className="text-5xl text-blue-500 mb-2" /> */}
+                    <p className="text-gray-500 text-sm">Belum ada data</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
