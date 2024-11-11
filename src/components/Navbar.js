@@ -17,6 +17,10 @@ const Navbar = () => {
         return "Gudang";
       case "/editprofile":
         return "Pengaturan";
+      case "/kedaluarsa":
+        return "Pengaturan";
+      case "/pusatdata":
+        return "Pusat Data";
       // Tambahkan lebih banyak kasus sesuai halaman yang Anda miliki
       default:
         return "Dashboard";
