@@ -108,8 +108,8 @@ const Landing = () => {
               <img src={automationImage} alt="Automation Illustration" className="w-full h-auto rounded-lg" />
             </div>
             <div className="flex-1 text-left mt-8 md:mt-0">
-              <h3 className="text-6xl font-light">Instant</h3>
-              <h3 className="text-6xl font-light">Fulfillment</h3>
+              <h3 className="text-6xl font-thin">Instant</h3>
+              <h3 className="text-6xl font-thin">Fulfillment</h3>
               <p className="text-gray-600 my-6">
                 Ratusan pilihan gudang untuk bantu proses produk
               </p>
