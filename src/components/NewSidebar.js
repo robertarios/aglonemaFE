@@ -59,16 +59,17 @@ function Newsidebar() {
           label="Gudang"
           isActive={isActive("/gudang")}
         />
-        <DropdownMenu
+        <SidebarItem
           icon={faFileAlt}
           label="Laporan"
+          path="/laporan"
           isActive={isActive("/laporan")}
         />
         <SidebarItem
           icon={faCogs}
           label="Pengaturan"
           path={"/editprofile"}
-          isActive={isActive("/editprofile", "/dashboard")} // Menggunakan isActive untuk cek path aktif
+          isActive={isActive("/editprofile", "/dashboard",)} // Menggunakan isActive untuk cek path aktif
         />
       </div>
     </div>
