@@ -5,6 +5,9 @@ import EditProfile from './pages/EditProfile';
 import '@fontsource/sora';
 import DashboardPage from './pages/DashboardPage';
 import LaporanPage from './pages/LaporanPage';
+import Warehouse from './pages/Gudang';
+import Kedaluarsa from './pages/PengaturanKedaluarsa';
+import PusatData from './pages/PusatData';
 
 function App() {
   return (
@@ -14,6 +17,9 @@ function App() {
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/laporan" element={<LaporanPage />} />
+        <Route path="/gudang" element={<Warehouse />} />
+        <Route path="/kedaluarsa" element={<Kedaluarsa />} />
+        <Route path="/pusatdata" element={<PusatData />} />
       </Routes>
     </div>
   );

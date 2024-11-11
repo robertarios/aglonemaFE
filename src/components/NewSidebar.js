@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -18,7 +17,7 @@ import Logo from "../assets/logodark.png"; // Sesuaikan path sesuai lokasi gamba
 function Newsidebar() {
   const location = useLocation();
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => location.pathname.startsWith(path);
 
   return (
     <div className="w-64 h-screen bg-[#EDF3FF] shadow flex-col justify-start items-start">
@@ -48,21 +47,35 @@ function Newsidebar() {
           icon={faBox}
           label="Produk"
           isActive={isActive("/produk")}
+          items={[
+            { label: "Sub-menu 1", path: "/produk/submenu1" },
+            { label: "Sub-menu 2", path: "/produk/submenu2" },
+          ]}
         />
         <DropdownMenu
           icon={faDatabase}
           label="Pusat Data"
-          isActive={isActive("/pusat-data")}
+          isActive={isActive("/pusatdata")}
+          items={[
+            { label: "Pengguna", path: "/pusatdata" },
+          ]}
         />
         <DropdownMenu
           icon={faWarehouse}
           label="Gudang"
           isActive={isActive("/gudang")}
+          items={[
+            { label: "Lokasi Gudang", path: "/gudang" },
+          ]}
         />
-        <DropdownMenu
+        <SidebarItem
           icon={faFileAlt}
           label="Laporan"
+          path="/laporan"
           isActive={isActive("/laporan")}
+          items={[
+            { label: "Produk", path: "/laporan" },
+          ]}
         />
         <SidebarItem
           icon={faCogs}
@@ -103,7 +116,7 @@ function SidebarItem({ icon, label, path, isActive }) {
   );
 }
 
-function DropdownMenu({ icon, label, isActive }) {
+function DropdownMenu({ icon, label, isActive, items }) {
   const [isOpen, setIsOpen] = useState(false);
   const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -111,7 +124,7 @@ function DropdownMenu({ icon, label, isActive }) {
     <div>
       <div
         className={`h-[58.02px] py-[5px] flex justify-start items-center pl-5 pr-4 py-[13.51px] cursor-pointer ${
-          isOpen ? "bg-[#457468]/40 border-l-4 border-[#16423c]" : ""
+          isActive ? "bg-[#457468]/40 border-l-4 border-[#16423c]" : ""
         }`}
         onClick={toggleDropdown}
       >
@@ -139,11 +152,19 @@ function DropdownMenu({ icon, label, isActive }) {
           />
         </div>
       </div>
+
+      {/* Render submenu items when open */}
       {isOpen && (
         <div className="pl-12 bg-[#f4f7fb]">
-          <SidebarItem label="Sub-menu 1" />
-          <SidebarItem label="Sub-menu 2" />
-          <SidebarItem label="Sub-menu 3" />
+          {items.map((item) => (
+            <SidebarItem
+              key={item.path}
+              icon={icon}
+              label={item.label}
+              path={item.path}
+              isActive={isActive}
+            />
+          ))}
         </div>
       )}
     </div>
