@@ -69,9 +69,10 @@ function Newsidebar() {
             { label: "Lokasi Gudang", path: "/gudang" },
           ]}
         />
-        <DropdownMenu
+        <SidebarItem
           icon={faFileAlt}
           label="Laporan"
+          path="/laporan"
           isActive={isActive("/laporan")}
           items={[
             { label: "Produk", path: "/laporan" },
@@ -80,8 +81,8 @@ function Newsidebar() {
         <SidebarItem
           icon={faCogs}
           label="Pengaturan"
-          path="/editprofile"
-          isActive={isActive("/editprofile")}
+          path={"/editprofile"}
+          isActive={isActive("/editprofile", "/dashboard")} // Menggunakan isActive untuk cek path aktif
         />
       </div>
     </div>

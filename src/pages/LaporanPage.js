@@ -1,12 +1,12 @@
 import React from 'react';
-import Newsidebar from '../components/NewSidebar';
+import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import Laporan from '../components/Laporan';
 
 const LaporanPage = () => {
   return (
     <div className="flex">
-      <Newsidebar />
+      <Sidebar />
       <div className="flex-1">
         <Navbar />
         <Laporan />
