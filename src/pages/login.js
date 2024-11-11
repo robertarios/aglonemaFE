@@ -3,8 +3,11 @@ import { FaEye, FaEnvelope, FaLock } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import loginImage from "../assets/loginImage.png";
 import logoIcon from "../assets/logoicon.png";
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 relative font-poppins">
       {/* Logo Section */}
@@ -50,7 +53,8 @@ const Login = () => {
             </div>
             <button
               type="submit"
-              className="w-full h-[62px] text-[20px] text-white bg-green-700 rounded-full hover:bg-green-800">
+              className="w-full h-[62px] text-[20px] text-white bg-green-700 rounded-full hover:bg-green-800"
+              onClick={() => navigate('/dashboard')}>
               Login
             </button>
           </form>

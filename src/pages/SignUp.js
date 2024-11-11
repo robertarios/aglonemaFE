@@ -3,8 +3,11 @@ import { FaUser, FaEnvelope, FaPhone, FaLock } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import logoIcon from "../assets/logoicon.png";
 import signupImage from "../assets/signupImage.png";
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 relative font-poppins">
       {/* Logo Section */}
@@ -93,6 +96,7 @@ const SignUp = () => {
             <button
               type="submit"
               className="w-full h-[62px] text-[20px] text-white bg-green-700 rounded-full hover:bg-green-800"
+              onClick={() => navigate('/dashboard')}
             >
               Create Account
             </button>

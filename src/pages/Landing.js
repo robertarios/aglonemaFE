@@ -14,7 +14,11 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 
+import { useNavigate } from 'react-router-dom';
+
 const Landing = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="text-center">
 
@@ -40,10 +44,16 @@ const Landing = () => {
             </li>
           </ul>
 
-          <button className="bg-white text-[#42675D] font-bold py-2 px-4 rounded-lg hover:bg-gray-100">
+          <button
+            className="bg-white text-[#42675D] font-bold py-2 px-4 rounded-lg hover:bg-gray-100"
+            onClick={() => navigate('/login')}
+          >
             Login
           </button>
-          <button className="bg-[#2F4A3B] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#3b5b4a]">
+          <button
+            className="bg-[#2F4A3B] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#3b5b4a]"
+            onClick={() => navigate('/signup')}
+          >
             Sign Up
           </button>
         </div>
