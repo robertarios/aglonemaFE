@@ -20,7 +20,7 @@ const Landing = () => {
 
       {/* Navbar Section */}
       <div className="relative fixed w-full">
-      <nav className="bg-[#42675D] px-8 py-4 flex justify-between items-center">
+      <nav className="bg-[#42675D] px-16 py-4 flex justify-between items-center">
         <div className="flex items-center">
           <img src={logo} alt="Aglostok Logo" className="h-10 mr-2" />
         </div>
@@ -52,10 +52,10 @@ const Landing = () => {
 
     <div className="text-center">
       {/* Hero Section */}
-      <section className="bg-[#42675D] text-white px-8 py-12">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center md:space-x-8">
+      <section className="bg-[#42675D] h-[750px] text-white px-6 py-12">
+        <div className="mx-16 mx-auto flex flex-col md:flex-row items-center md:space-x-">
           <div className="flex-1 text-left">
-            <h1 className="text-3xl md:text-4xl font-bold leading-tight">
+            <h1 className="text-[50px] my-5 font-bold leading-tight">
               Fulfillment Andalan Petani untuk Tingkatkan Penyimpanan Produk
             </h1>
             <p className="text-lg mt-4">
@@ -69,19 +69,19 @@ const Landing = () => {
       </section>
 
       {/* Statistics Section */}
-      <section className="bg-white py-12 px-8 -mt-24">
+      <section className="relative bg-white py-32 px-8 -mt-24">
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">
-          <div className="bg-white shadow-lg rounded-lg p-6 text-center">
-            <div className="text-[#62AA99] text-5xl mb-2">170+</div>
-            <p className="text-gray-600">Gudang Mitra</p>
+          <div className="bg-white shadow-lg rounded-lg p-6 pb-18 text-center">
+            <div className="text-[#62AA99] text-5xl mt-6 mb-2">170+</div>
+            <p className="text-gray-600 mb-6">Gudang Mitra</p>
           </div>
-          <div className="bg-white shadow-lg rounded-lg p-6 text-center">
-            <div className="text-[#62AA99] text-5xl mb-2">40+</div>
-            <p className="text-gray-600">Tersebar Diseluruh Kota Indonesia</p>
+          <div className="bg-white shadow-lg rounded-lg p-6 pb-18 text-center">
+            <div className="text-[#62AA99] text-5xl mt-6 mb-2">40+</div>
+            <p className="text-gray-600 mb-6">Tersebar Diseluruh Kota Indonesia</p>
           </div>
-          <div className="bg-white shadow-lg rounded-lg p-6 text-center">
-            <div className="text-[#62AA99] text-5xl mb-2">2.3K+</div>
-            <p className="text-gray-600">Sudah Banyak Petani Bergabung</p>
+          <div className="bg-white shadow-lg rounded-lg p-6 h-[200px] text-center">
+            <div className="text-[#62AA99] text-5xl mt-6 mb-2">2.3K+</div>
+            <p className="text-gray-600 mb-6">Sudah Banyak Petani Bergabung</p>
           </div>
         </div>
       </section>
@@ -93,13 +93,14 @@ const Landing = () => {
           <p className="text-gray-600 mt-4 mb-8">
             Kami bantu otomasi produkmu mulai penyimpanan, baik untuk kamu para UMKM hingga korporasi skala besar
           </p>
-          <div className="flex flex-col md:flex-row items-center md:space-x-8">
+          <div className="flex flex-col md:flex-row items-center mt-16 md:space-x-8">
             <div className="flex-1">
               <img src={automationImage} alt="Automation Illustration" className="w-full h-auto rounded-lg" />
             </div>
             <div className="flex-1 text-left mt-8 md:mt-0">
-              <h3 className="text-4xl font-light">Instant Fulfillment</h3>
-              <p className="text-gray-600 mt-4">
+              <h3 className="text-6xl font-light">Instant</h3>
+              <h3 className="text-6xl font-light">Fulfillment</h3>
+              <p className="text-gray-600 my-6">
                 Ratusan pilihan gudang untuk bantu proses produk
               </p>
               <p className="text-gray-600 mt-2">
@@ -111,7 +112,7 @@ const Landing = () => {
       </section>
 
       {/* Why Choose Aglostok Section */}
-      <section className="bg-white py-8 px-8 pb-20">
+      <section className="bg-white py-8 px-8 mt-24 pb-20">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-semibold">Kenapa Harus Dengan Aglostok?</h2>
           <p className="text-gray-600 mt-4 mb-8">
@@ -119,7 +120,7 @@ const Landing = () => {
           </p>
 
           {/* Features Section with Custom Icons */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 mt-16 mb-32 sm:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <div className="text-center">
               <img src={affordableIcon} alt="Affordable" className="w-16 h-16 mb-4 mx-auto" />
@@ -182,7 +183,7 @@ const Landing = () => {
         }}
       >
         {}
-        <div className="newsletter-text" style={{ flex: 1, textAlign: 'left', color: 'white', paddingRight: '20px' }}>
+        <div className="newsletter-text" style={{ flex: 1, textAlign: 'left', color: 'white', paddingRight: '20px', paddingTop:'40px', paddingBottom:'40px' }}>
           <h1 style={{ fontSize: '34px', margin: 0 }}>Dapatkan Berita Terbaru</h1>
           <p style={{ fontSize: '14px', margin: 0 }}>
             Jadi yang pertama tahu info terbaru soal fitur, promosi, dan berbagai update lainnya dari AgloStok
