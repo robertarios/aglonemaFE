@@ -1,18 +1,18 @@
 import React from 'react';
-import Navbar from '../components/Navbar';
-import Dashboard from '../components/Dashboard';
 import Newsidebar from '../components/NewSidebar';
+import Navbar from '../components/Navbar';
+import Laporan from '../components/Laporan';
 
-const DashboardPage = () => {
+const LaporanPage = () => {
   return (
     <div className="flex">
       <Newsidebar />
       <div className="flex-1">
         <Navbar />
-        <Dashboard />
+        <Laporan />
       </div>
     </div>
   );
 };
 
-export default DashboardPage;
+export default LaporanPage;
