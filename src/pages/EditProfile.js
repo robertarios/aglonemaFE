@@ -2,6 +2,8 @@ import { useState } from "react";
 import Newsidebar from "../components/NewSidebar"; // Mengimpor Sidebar yang baru
 import Navbar from "../components/Navbar";
 import Iconverify from "../assets/verifycard.png";
+import VerificationCard from "../components/VerificationCard";
+import SidebarMenu from "../components/SidebarMenu";
 
 function EditProfile() {
   const [name, setName] = useState("");
@@ -49,51 +51,8 @@ function EditProfile() {
         <div className="flex">
           {/* Left Side: Menu Edit Profile */}
           <div className="w-1/4 py-10 mr-6">
-            <ul className="text-left">
-              <li className="mx-8 p-3 text-start bg-white border-l-4 border-[#2f6d64]">
-                <a href="#name" className="pl-4 text-[#2f6d64]">
-                  Edit Profile
-                </a>
-              </li>
-              <li className="mx-8 p-3 text-start ">
-                <a href="#email" className="pl-4 text-[#2f6d64]">
-                  Spesifikasi Tambahan
-                </a>
-              </li>
-              <li className=" mx-8 p-3 text-start ">
-                <a href="#email" className="pl-4 text-[#2f6d64]">
-                  Pengaturan Kedaluarsa
-                </a>
-              </li>
-              <li className=" mx-8 p-3 text-start ">
-                <a href="#email" className="pl-4 text-[#2f6d64]">
-                  Ubah Kata Sandi
-                </a>
-              </li>
-              <li className=" mx-8 p-3 text-start ">
-                <a href="#email" className="pl-4 text-[#2f6d64]">
-                  Reset Data
-                </a>
-              </li>
-            </ul>
-            <div className="mx-8 mt-8 p-6  bg-white rounded-lg shadow-lg flex flex-col items-center">
-              {/* Gambar */}
-              <img src={Iconverify} alt="Verification" className=" my-6" />
-
-              {/* Teks */}
-              <h2 className="text-xl font-semibold text-[#467469] mb-4 self-start">
-                Verifikasi Akunmu!
-              </h2>
-              <p className="text-gray-500 text-sm mb-8 self-start text-left">
-                Manfaatkan fitur lebih maksimal dengan verifikasi nomor
-                handphonemu sekarang!
-              </p>
-
-              {/* Tombol Verifikasi */}
-              <button className="mt-auto items-start bg-[#467469] text-white py-2 px-3 self-start rounded hover:bg-blue-600 self-start">
-                Verifikasi Sekarang
-              </button>
-            </div>
+            <SidebarMenu />
+            <VerificationCard />
           </div>
 
           {/* Right Side: Form and Cards */}

@@ -6,6 +6,7 @@ import '@fontsource/sora';
 import DashboardPage from './pages/DashboardPage';
 import LaporanPage from './pages/LaporanPage';
 import Warehouse from './pages/Gudang';
+import Kedaluarsa from './pages/PengaturanKedaluarsa';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/laporan" element={<LaporanPage />} />
         <Route path="/gudang" element={<Warehouse />} />
+        <Route path="/kedaluarsa" element={<Kedaluarsa />} />
       </Routes>
     </div>
   );
