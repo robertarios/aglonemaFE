@@ -108,7 +108,6 @@ const Warehouse = () => {
       <Newsidebar />
       <div className="flex-1 flex flex-col bg-[#FAFAFA]">
         <Navbar />
-
         <div className="p-6 h-screen">
           <div className="flex justify-between items-center mb-4">
             <div className="relative w-1/4">

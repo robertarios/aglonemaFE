@@ -13,7 +13,6 @@ function EditProfile() {
   const handleNameChange = (event) => setName(event.target.value);
   const handleEmailChange = (event) => setEmail(event.target.value);
   const handleAddressChange = (event) => setAddress(event.target.value);
-  const handleLogoChange = (event) => setLogo(event.target.files[0]);
 
   // Handle form submission
   const handleSubmit = (event) => {
@@ -24,6 +23,20 @@ function EditProfile() {
       address,
       logo,
     });
+  };
+  const [imagePreview, setImagePreview] = useState(null);
+
+  // Fungsi untuk menangani perubahan gambar
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Membaca file dan menampilkan preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result); // Update state dengan URL gambar
+      };
+      reader.readAsDataURL(file); // Membaca gambar sebagai Data URL
+    }
   };
 
   return (
@@ -68,17 +81,17 @@ function EditProfile() {
               <img src={Iconverify} alt="Verification" className=" my-6" />
 
               {/* Teks */}
-              <h2 className="text-xl font-semibold text-gray-700 mb-4 self-start">
-                Verifikasi Akunmu
+              <h2 className="text-xl font-semibold text-[#467469] mb-4 self-start">
+                Verifikasi Akunmu!
               </h2>
               <p className="text-gray-500 text-sm mb-8 self-start text-left">
-                Silakan verifikasi akun Anda untuk mendapatkan akses penuh ke
-                layanan kami.
+                Manfaatkan fitur lebih maksimal dengan verifikasi nomor
+                handphonemu sekarang!
               </p>
 
               {/* Tombol Verifikasi */}
-              <button className="mt-auto items-start bg-blue-500 text-white py-2 px-6 self-start rounded hover:bg-blue-600 self-start">
-                Verifikasi
+              <button className="mt-auto items-start bg-[#467469] text-white py-2 px-3 self-start rounded hover:bg-blue-600 self-start">
+                Verifikasi Sekarang
               </button>
             </div>
           </div>
@@ -98,9 +111,10 @@ function EditProfile() {
                 <div className="grid grid-cols-2 gap-4">
                   {/* Logo Pengguna */}
                   <div className="flex items-center gap-4">
+                    {/* Gambar Preview */}
                     <img
                       className="w-[60px] h-[60px] rounded-full"
-                      src="https://via.placeholder.com/60x60"
+                      src={imagePreview || "https://via.placeholder.com/60x60"} // Menampilkan gambar preview atau placeholder
                       alt="User Logo"
                     />
                     <div>
@@ -116,9 +130,9 @@ function EditProfile() {
                         onChange={handleLogoChange} // Handle file selection
                       />
 
-                      {/* Button that triggers file selection */}
+                      {/* Button to trigger file selection */}
                       <button
-                        className="mt-2 px-3 py-1 bg-[#467469]/25 text-xs font-bold text-[#467469] rounded-lg"
+                        className="mt-2 px-3 py-1 bg-[#467469]/25 text-left text-xs font-bold text-[#467469] rounded-lg"
                         onClick={() =>
                           document.getElementById("fileInput").click()
                         }
@@ -131,7 +145,7 @@ function EditProfile() {
                   {/* Nama Pengguna */}
                   <div>
                     <label className="block text-sm text-[#3c4b64] mb-1 text-left">
-                      Nama Pengguna <span className="text-[#f24242]">*</span>
+                      Nama Perusahaan <span className="text-[#f24242]">*</span>
                     </label>
                     <input
                       type="text"
@@ -147,13 +161,12 @@ function EditProfile() {
                       No. Telepon <span className="text-[#f24242]">*</span>
                     </label>
                     <div className="flex">
-                      <span className="inline-block px-4 bg-gray-100 border rounded-l-full">
+                      <span className="inline-block px-4 bg-gray-100 pt-2 border rounded-l-full">
                         +62
                       </span>
                       <input
                         type="text"
-                        value="85831358991"
-                        disabled
+                        placeholder="85831358991"
                         className="w-full h-[40px] px-4 border-t border-b border-r rounded-r-full text-[#5c6873]"
                       />
                     </div>
@@ -218,9 +231,9 @@ function EditProfile() {
               <div className="flex justify-end mt-6">
                 <button
                   onClick={handleSubmit}
-                  className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600"
+                  className="bg-[#16423C] text-white py-3 px-6 rounded-full hover:bg-green-800"
                 >
-                  Save Changes
+                  Simpan
                 </button>
               </div>
             </div>
