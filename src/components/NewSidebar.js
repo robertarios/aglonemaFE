@@ -55,10 +55,9 @@ function Newsidebar() {
         <DropdownMenu
           icon={faDatabase}
           label="Pusat Data"
-          isActive={isActive("/pusat-data")}
+          isActive={isActive("/pusatdata")}
           items={[
-            { label: "Data 1", path: "/pusat-data/data1" },
-            { label: "Data 2", path: "/pusat-data/data2" },
+            { label: "Pengguna", path: "/pusatdata" },
           ]}
         />
         <DropdownMenu
