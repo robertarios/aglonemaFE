@@ -43,14 +43,11 @@ function Newsidebar() {
           path="/dashboard"
           isActive={isActive("/dashboard")}
         />
-        <DropdownMenu
+        <SidebarItem
           icon={faBox}
           label="Produk"
           isActive={isActive("/produk")}
-          items={[
-            { label: "Sub-menu 1", path: "/produk/submenu1" },
-            { label: "Sub-menu 2", path: "/produk/submenu2" },
-          ]}
+          path="/produk"
         />
         <DropdownMenu
           icon={faDatabase}
