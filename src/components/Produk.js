@@ -15,8 +15,8 @@ const Produk = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false); // Modal konfirmasi hapus
-  const [productToDelete, setProductToDelete] = useState(null); // Produk yang akan dihapus
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
   const [newProduct, setNewProduct] = useState({
     id: "",
     sku: "",
@@ -27,13 +27,13 @@ const Produk = () => {
   const [editMode, setEditMode] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
   const [stockFilter, setStockFilter] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   // Fungsi untuk mengambil data produk dari backend
   const fetchProducts = async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/products");
       setProducts(response.data);
-      setFilteredProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -46,6 +46,12 @@ const Produk = () => {
   // Fungsi untuk menerapkan filter
   const applyFilter = () => {
     let filtered = products;
+
+    if (searchKeyword) {
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().includes(searchKeyword.toLowerCase())
+      );
+    }
 
     if (statusFilter) {
       filtered = filtered.filter((product) => product.status === statusFilter);
@@ -62,7 +68,12 @@ const Produk = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [statusFilter, stockFilter]);
+  }, [products, statusFilter, stockFilter, searchKeyword]); // Tambahkan `products` di sini
+
+  // Fungsi untuk menangani perubahan input pencarian
+  const handleSearchChange = (e) => {
+    setSearchKeyword(e.target.value);
+  };
 
   // Menambah produk baru
   const handleAddProduct = async () => {
@@ -169,6 +180,8 @@ const Produk = () => {
               type="text"
               placeholder="Cari produk..."
               className="w-full pl-12 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-300"
+              value={searchKeyword}
+              onChange={handleSearchChange}
             />
           </div>
 
@@ -230,13 +243,18 @@ const Produk = () => {
                 <th className="py-3 px-4 font-semibold text-left w-32">SKU</th>
                 <th className="py-3 px-4 font-semibold text-left w-64">Nama</th>
                 <th className="py-3 px-4 font-semibold text-left w-24">Stok</th>
-                <th className="py-3 px-4 font-semibold text-left w-32">Status</th>
+                <th className="py-3 px-4 font-semibold text-left w-32">
+                  Status
+                </th>
                 <th className="py-3 px-4 font-semibold text-left w-32">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {filteredProducts.map((product) => (
-                <tr key={product.id} className="border-b border-gray-300 hover:bg-gray-50">
+                <tr
+                  key={product.id}
+                  className="border-b border-gray-300 hover:bg-gray-50"
+                >
                   <td className="py-3 px-4">
                     <input type="checkbox" />
                   </td>
@@ -245,10 +263,16 @@ const Produk = () => {
                   <td className="py-3 px-4">{product.stock}</td>
                   <td className="py-3 px-4">{product.status}</td>
                   <td className="py-3 px-4 flex space-x-2">
-                    <button onClick={() => handleEditProduct(product)} className="text-blue-500 hover:text-blue-700">
+                    <button
+                      onClick={() => handleEditProduct(product)}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
                       <FaEdit />
                     </button>
-                    <button onClick={() => handleDeleteClick(product.id)} className="text-red-500 hover:text-red-700">
+                    <button
+                      onClick={() => handleDeleteClick(product.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
                       <FaTrash />
                     </button>
                   </td>
@@ -271,36 +295,50 @@ const Produk = () => {
               placeholder="SKU Produk"
               className="w-full mb-2 p-2 border"
               value={newProduct.sku}
-              onChange={(e) => setNewProduct({ ...newProduct, sku: e.target.value })}
+              onChange={(e) =>
+                setNewProduct({ ...newProduct, sku: e.target.value })
+              }
             />
             <input
               type="text"
               placeholder="Nama Produk"
               className="w-full mb-2 p-2 border"
               value={newProduct.name}
-              onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+              onChange={(e) =>
+                setNewProduct({ ...newProduct, name: e.target.value })
+              }
             />
             <input
               type="number"
               placeholder="Stok Produk"
               className="w-full mb-2 p-2 border"
               value={newProduct.stock}
-              onChange={(e) => setNewProduct({ ...newProduct, stock: Number(e.target.value) })}
+              onChange={(e) =>
+                setNewProduct({ ...newProduct, stock: Number(e.target.value) })
+              }
             />
             <select
               className="w-full mb-4 p-2 border"
               value={newProduct.status}
-              onChange={(e) => setNewProduct({ ...newProduct, status: e.target.value })}
+              onChange={(e) =>
+                setNewProduct({ ...newProduct, status: e.target.value })
+              }
             >
               <option value="">Pilih Status</option>
               <option value="Tersedia">Tersedia</option>
               <option value="Habis">Habis</option>
             </select>
             <div className="flex justify-end space-x-2">
-              <button onClick={() => setShowModal(false)} className="bg-red-500 text-white px-4 py-2 rounded">
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
                 Batal
               </button>
-              <button onClick={editMode ? handleUpdateProduct : handleAddProduct} className="bg-green-500 text-white px-4 py-2 rounded">
+              <button
+                onClick={editMode ? handleUpdateProduct : handleAddProduct}
+                className="bg-green-500 text-white px-4 py-2 rounded"
+              >
                 Simpan
               </button>
             </div>
@@ -315,10 +353,16 @@ const Produk = () => {
             <h2 className="text-xl font-semibold mb-4">Konfirmasi Hapus</h2>
             <p>Apakah Anda yakin ingin menghapus produk ini?</p>
             <div className="flex justify-end space-x-2 mt-4">
-              <button onClick={() => setShowConfirmDeleteModal(false)} className="bg-gray-500 text-white px-4 py-2 rounded">
+              <button
+                onClick={() => setShowConfirmDeleteModal(false)}
+                className="bg-gray-500 text-white px-4 py-2 rounded"
+              >
                 Batal
               </button>
-              <button onClick={confirmDeleteProduct} className="bg-red-500 text-white px-4 py-2 rounded">
+              <button
+                onClick={confirmDeleteProduct}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
                 Hapus
               </button>
             </div>
