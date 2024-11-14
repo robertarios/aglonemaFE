@@ -110,6 +110,29 @@ const Produk = () => {
     }
   };
 
+  // Fungsi untuk mengunduh data dalam format CSV
+  const downloadExcel = () => {
+    const csvData = [
+      ["ID", "SKU", "Nama Produk", "Stok", "Status"],
+      ...products.map((product) => [
+        product.id,
+        product.sku,
+        product.name,
+        product.stock,
+        product.status,
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "data_produk.csv";
+    link.click();
+  };
+
   return (
     <div className="p-6">
       {/* Header Section with Tabs and Total Asset */}
@@ -162,7 +185,10 @@ const Produk = () => {
             onChange={(e) => setStockFilter(e.target.value)}
           />
         </div>
-        <button className="bg-green-700 text-white px-4 py-2 rounded-full flex items-center space-x-1 hover:bg-green-800">
+        <button
+          onClick={downloadExcel}
+          className="bg-green-700 text-white px-4 py-2 rounded-full flex items-center space-x-1 hover:bg-green-800"
+        >
           <FaFileExcel className="mr-1" /> <span>Data Excel</span>
         </button>
       </div>
