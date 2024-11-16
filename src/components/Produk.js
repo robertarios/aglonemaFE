@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Table, Pagination } from "react-bootstrap";
+
 import {
   FaSearch,
   FaPlus,
@@ -9,6 +12,8 @@ import {
   FaCheck,
   FaEdit,
   FaTrash,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
 
 const Produk = () => {
@@ -17,6 +22,22 @@ const Produk = () => {
   const [showModal, setShowModal] = useState(false);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const getPaginatedData = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredProducts.slice(startIndex, endIndex);
+  };
+
+  const getTotalPages = () => {
+    return Math.ceil(filteredProducts.length / itemsPerPage);
+  };
+  
+  const handlePageClick = (page) => {
+    setCurrentPage(page);
+  };
+
   const [newProduct, setNewProduct] = useState({
     id: "",
     sku: "",
@@ -119,7 +140,9 @@ const Produk = () => {
   // Fungsi untuk mengonfirmasi hapus produk
   const confirmDeleteProduct = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/products/${productToDelete}`);
+      await axios.delete(
+        `http://localhost:5000/api/products/${productToDelete}`
+      );
       fetchProducts();
       setShowConfirmDeleteModal(false);
       setProductToDelete(null);
@@ -159,9 +182,9 @@ const Produk = () => {
           <h1 className="text-2xl font-semibold text-green-700 border-b-2 border-green-700 cursor-pointer">
             Inventori
           </h1>
-          <h2 className="text-2xl font-semibold text-gray-400 cursor-pointer">
+          {/* <h2 className="text-2xl font-semibold text-gray-400 cursor-pointer">
             Kategori
-          </h2>
+          </h2> */}
         </div>
         <div className="flex items-center space-x-4 text-gray-500">
           <button className="flex items-center text-green-700 space-x-1">
@@ -250,38 +273,122 @@ const Produk = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map((product) => (
-                <tr
-                  key={product.id}
-                  className="border-b border-gray-300 hover:bg-gray-50"
-                >
-                  <td className="py-3 px-4">
-                    <input type="checkbox" />
-                  </td>
-                  <td className="py-3 px-4">{product.sku}</td>
-                  <td className="py-3 px-4">{product.name}</td>
-                  <td className="py-3 px-4">{product.stock}</td>
-                  <td className="py-3 px-4">{product.status}</td>
-                  <td className="py-3 px-4 flex space-x-2">
-                    <button
-                      onClick={() => handleEditProduct(product)}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(product.id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <FaTrash />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+  {getPaginatedData().map((product) => (
+    <tr
+      key={product.id}
+      className="border-b border-gray-300 hover:bg-gray-50"
+    >
+      <td className="py-3 px-4">
+        <input type="checkbox" />
+      </td>
+      <td className="py-3 px-4">{product.sku}</td>
+      <td className="py-3 px-4">{product.name}</td>
+      <td className="py-3 px-4">{product.stock}</td>
+      <td className="py-3 px-4">{product.status}</td>
+      <td className="py-3 px-4 flex space-x-2">
+        <button
+          onClick={() => handleEditProduct(product)}
+          className="text-blue-500 hover:text-blue-700"
+        >
+          <FaEdit />
+        </button>
+        <button
+          onClick={() => handleDeleteClick(product.id)}
+          className="text-red-500 hover:text-red-700"
+        >
+          <FaTrash />
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+</table>
+</div>
+
+{/* Pagination */}
+<div className="flex justify-end  mt-4 pr-4">
+  <nav>
+    <ul className="flex items-center space-x-2">
+      {/* First Page */}
+      <li>
+        <button
+          onClick={() => setCurrentPage(1)}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 rounded ${
+            currentPage === 1 ? "bg-gray-300" : "bg-gray-200 hover:bg-gray-400"
+          }`}
+        >
+          «
+        </button>
+      </li>
+
+      {/* Previous Page */}
+      <li>
+        <button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 rounded ${
+            currentPage === 1 ? "bg-gray-300" : "bg-gray-200 hover:bg-gray-400"
+          }`}
+        >
+          ‹
+        </button>
+      </li>
+
+      {/* Page Numbers */}
+      {Array.from({ length: getTotalPages() }, (_, index) => (
+        <li key={index}>
+          <button
+            onClick={() => handlePageClick(index + 1)}
+            className={`px-3 py-1 rounded ${
+              currentPage === index + 1
+                ? "bg-green-700 text-white"
+                : "bg-gray-200 hover:bg-gray-400"
+            }`}
+          >
+            {index + 1}
+          </button>
+        </li>
+      ))}
+
+      {/* Next Page */}
+      <li>
+        <button
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage === getTotalPages()}
+          className={`px-3 py-1 rounded ${
+            currentPage === getTotalPages()
+              ? "bg-gray-300"
+              : "bg-gray-200 hover:bg-gray-400"
+          }`}
+        >
+          ›
+        </button>
+      </li>
+
+      {/* Last Page */}
+      <li>
+        <button
+          onClick={() => setCurrentPage(getTotalPages())}
+          disabled={currentPage === getTotalPages()}
+          className={`px-3 py-1 rounded ${
+            currentPage === getTotalPages()
+              ? "bg-gray-300"
+              : "bg-gray-200 hover:bg-gray-400"
+          }`}
+        >
+          »
+        </button>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+        
       </div>
+
+
+      
 
       {/* Modal untuk tambah/edit produk */}
       {showModal && (
