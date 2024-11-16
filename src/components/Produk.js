@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Table, Pagination } from "react-bootstrap";
 
 import {
   FaSearch,
@@ -12,8 +10,6 @@ import {
   FaCheck,
   FaEdit,
   FaTrash,
-  FaChevronLeft,
-  FaChevronRight,
 } from "react-icons/fa";
 
 const Produk = () => {
@@ -33,7 +29,7 @@ const Produk = () => {
   const getTotalPages = () => {
     return Math.ceil(filteredProducts.length / itemsPerPage);
   };
-  
+
   const handlePageClick = (page) => {
     setCurrentPage(page);
   };
@@ -273,40 +269,41 @@ const Produk = () => {
               </tr>
             </thead>
             <tbody>
-  {getPaginatedData().map((product) => (
-    <tr
-      key={product.id}
-      className="border-b border-gray-300 hover:bg-gray-50"
-    >
-      <td className="py-3 px-4">
-        <input type="checkbox" />
-      </td>
-      <td className="py-3 px-4">{product.sku}</td>
-      <td className="py-3 px-4">{product.name}</td>
-      <td className="py-3 px-4">{product.stock}</td>
-      <td className="py-3 px-4">{product.status}</td>
-      <td className="py-3 px-4 flex space-x-2">
-        <button
-          onClick={() => handleEditProduct(product)}
-          className="text-blue-500 hover:text-blue-700"
-        >
-          <FaEdit />
-        </button>
-        <button
-          onClick={() => handleDeleteClick(product.id)}
-          className="text-red-500 hover:text-red-700"
-        >
-          <FaTrash />
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
-</table>
-</div>
+              {getPaginatedData().map((product) => (
+                <tr
+                  key={product.id}
+                  className="border-b border-gray-300 hover:bg-gray-50"
+                >
+                  <td className="py-3 px-4">
+                    <input type="checkbox" />
+                  </td>
+                  <td className="py-3 px-4">{product.sku}</td>
+                  <td className="py-3 px-4">{product.name}</td>
+                  <td className="py-3 px-4">{product.stock}</td>
+                  <td className="py-3 px-4">{product.status}</td>
+                  <td className="py-3 px-4 flex space-x-2">
+                    <button
+                      onClick={() => handleEditProduct(product)}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(product.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
+        {/* Pagination */}
 {/* Pagination */}
-<div className="flex justify-end  mt-4 pr-4">
+<div className="flex justify-end mt-4 pr-4 mb-6">
   <nav>
     <ul className="flex items-center space-x-2">
       {/* First Page */}
@@ -315,7 +312,9 @@ const Produk = () => {
           onClick={() => setCurrentPage(1)}
           disabled={currentPage === 1}
           className={`px-3 py-1 rounded ${
-            currentPage === 1 ? "bg-gray-300" : "bg-gray-200 hover:bg-gray-400"
+            currentPage === 1
+              ? "bg-gray-300"
+              : "bg-gray-200 hover:bg-gray-400"
           }`}
         >
           «
@@ -328,7 +327,9 @@ const Produk = () => {
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
           className={`px-3 py-1 rounded ${
-            currentPage === 1 ? "bg-gray-300" : "bg-gray-200 hover:bg-gray-400"
+            currentPage === 1
+              ? "bg-gray-300"
+              : "bg-gray-200 hover:bg-gray-400"
           }`}
         >
           ‹
@@ -384,11 +385,7 @@ const Produk = () => {
   </nav>
 </div>
 
-        
       </div>
-
-
-      
 
       {/* Modal untuk tambah/edit produk */}
       {showModal && (
