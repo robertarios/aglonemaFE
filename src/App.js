@@ -28,6 +28,7 @@ function App() {
         <Route path="/gudang" element={<Warehouse />} />
         <Route path="/kedaluarsa" element={<Kedaluarsa />} />
         <Route path="/pusatdata" element={<PusatData />} />
+        <Route path="/dashboard" element={<DashboardPage />} /> {/* Tambahkan route dashboard */}
       </Routes>
     </div>
   );
