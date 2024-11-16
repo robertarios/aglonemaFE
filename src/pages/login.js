@@ -13,22 +13,43 @@ const Login = () => {
     email: "",
     password: "",
   });
+   // State untuk pesan error di setiap field
+   const [fieldErrors, setFieldErrors] = useState({
+    email: "",
+    password: "",
+  });
 
   // State untuk pesan error
-  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
+  
   // Handle perubahan input
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    // Hapus error untuk field yang diisi ulang
+    setFieldErrors({ ...fieldErrors, [name]: "" });
   };
+
 
   // Handle submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validasi input kosong
-    if (!formData.email || !formData.password) {
-      setError("Please fill in all fields.");
+    let errors = {};
+    if (!formData.email) {
+      errors.email = "Email is required.";
+    }
+    if (!formData.password) {
+      errors.password = "Password is required.";
+    }
+
+    // Jika ada error, set state dan hentikan proses
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
@@ -40,11 +61,18 @@ const Login = () => {
       });
 
       // Jika login berhasil
-      alert(response.data.message); // Tampilkan pesan sukses
-      navigate("/dashboard"); // Arahkan ke dashboard
+      setSuccessMessage(response.data.message); // Simpan pesan sukses
+      setShowModal(true); // Tampilkan modal
+      setTimeout(() => {
+        setShowModal(false); // Tutup modal setelah 3 detik
+        navigate("/dashboard"); // Redirect ke dashboard
+      }, 3000);
     } catch (err) {
       // Tangani error dari backend
-      setError(err.response?.data?.error || "Something went wrong!");
+      setFieldErrors({
+        email: "",
+        password: err.response?.data?.error || "Invalid credentials.",
+      });
     }
   };
 
@@ -72,35 +100,40 @@ const Login = () => {
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Error Message */}
-            {error && <div className="text-red-500 text-sm">{error}</div>}
+          
 
             {/* Email Input */}
-            <div className="relative flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
-              <FaEnvelope className="text-[#457468] text-lg mr-4" />
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full h-full pl-2 pr-4 text-gray-600 focus:outline-none rounded-full"
-                required
-              />
+            <div className="relative flex flex-col">
+              <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
+                <FaEnvelope className="text-[#457468] text-lg mr-4" />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full h-full pl-2 pr-4 text-gray-600 focus:outline-none rounded-full"
+                />
+              </div>
+               {/* Error Message for Email (Baru Ditambahkan) */}
+               {fieldErrors.email && <p className="text-red-500 text-sm ml-2 pl-2 w-[150px] text-left">{fieldErrors.email}</p>}
             </div>
 
             {/* Password Input */}
-            <div className="relative flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
-              <FaLock className="text-[#457468] text-lg mr-4" />
-              <input
-                type="password"
-                name="password"
-                placeholder="Enter password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full h-full pl-2 pr-12 text-gray-600 focus:outline-none rounded-full"
-                required
-              />
+            <div className="relative flex flex-col">
+              <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
+                <FaLock className="text-[#457468] text-lg mr-4" />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Enter password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full h-full pl-2 pr-4 text-gray-600 focus:outline-none rounded-full"
+                />
+              </div>
+              {/* Error Message for Password (Baru Ditambahkan) */}
+              {fieldErrors.password && <p className="text-red-500 text-sm ml-2 pl-2 w-[150px] text-left">{fieldErrors.password}</p>}
             </div>
 
             {/* Forgot Password */}
@@ -127,6 +160,18 @@ const Login = () => {
           />
         </div>
       </div>
+
+       {/* Modal untuk pesan sukses */}
+       {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 className="text-green-700 text-2xl font-semibold mb-4">Success!</h2>
+            <p className="text-gray-600">{successMessage}</p>
+            <p className="text-sm text-gray-500 mt-4">Redirecting to dashboard...</p>
+          </div>
+        </div>
+      )}
+      
     </div>
   );
 };
