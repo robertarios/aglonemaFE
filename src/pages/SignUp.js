@@ -1,14 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaUser, FaEnvelope, FaPhone, FaLock } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import logoIcon from "../assets/logoicon.png";
 import signupImage from "../assets/signupImage.png";
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  
-  return (
+
+  const [formData, setFormData] = useState({
+    fullname: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validasi password dan confirm password
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      // Kirim data ke API
+      const response = await axios.post("http://localhost:5000/api/users/signup", {
+        fullname: formData.fullname,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+      });
+
+      // Tampilkan pesan sukses dan alihkan ke halaman login
+      alert(response.data.message);
+      navigate("/login");
+    } catch (err) {
+      // Tampilkan pesan error dari backend
+      setError(err.response.data.error || "Something went wrong!");
+    }
+  };
+
+   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 relative font-poppins">
       {/* Logo Section */}
       <div className="absolute top-[30px] left-[30px] flex items-center space-x-2">
@@ -31,14 +73,21 @@ const SignUp = () => {
             </NavLink>
           </div>
 
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Error Message */}
+            {error && <div className="text-red-500 text-sm">{error}</div>}
+
             {/* Full Name Input */}
             <div className="relative flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
               <FaUser className="text-[#457468] text-lg mr-4" />
               <input
                 type="text"
+                name="fullname"
                 placeholder="Full Name"
+                value={formData.fullname}
+                onChange={handleChange}
                 className="w-full h-full pl-2 pr-4 text-gray-600 focus:outline-none rounded-full"
+                required
               />
             </div>
 
@@ -47,8 +96,12 @@ const SignUp = () => {
               <FaEnvelope className="text-[#457468] text-lg mr-4" />
               <input
                 type="email"
+                name="email"
                 placeholder="Enter email"
+                value={formData.email}
+                onChange={handleChange}
                 className="w-full h-full pl-2 pr-4 text-gray-600 focus:outline-none rounded-full"
+                required
               />
             </div>
 
@@ -57,7 +110,10 @@ const SignUp = () => {
               <FaPhone className="text-[#457468] text-lg mr-4" />
               <input
                 type="tel"
+                name="phone"
                 placeholder="Enter phone no"
+                value={formData.phone}
+                onChange={handleChange}
                 className="w-full h-full pl-2 pr-4 text-gray-600 focus:outline-none rounded-full"
               />
             </div>
@@ -67,8 +123,12 @@ const SignUp = () => {
               <FaLock className="text-[#457468] text-lg mr-4" />
               <input
                 type="password"
+                name="password"
                 placeholder="Enter password"
+                value={formData.password}
+                onChange={handleChange}
                 className="w-full h-full pl-2 pr-12 text-gray-600 focus:outline-none rounded-full"
+                required
               />
             </div>
 
@@ -77,14 +137,18 @@ const SignUp = () => {
               <FaLock className="text-[#457468] text-lg mr-4" />
               <input
                 type="password"
+                name="confirmPassword"
                 placeholder="Confirm password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
                 className="w-full h-full pl-2 pr-12 text-gray-600 focus:outline-none rounded-full"
+                required
               />
             </div>
 
             {/* Terms and Conditions Checkbox */}
             <div className="flex items-center space-x-2 text-gray-500">
-              <input type="checkbox" className="form-checkbox h-4 w-4 text-green-600 rounded" />
+              <input type="checkbox" className="form-checkbox h-4 w-4 text-green-600 rounded" required />
               <p className="text-sm">
                 By signing up you agree to our{" "}
                 <span className="text-green-700 cursor-pointer">terms & conditions</span> of use and{" "}
@@ -96,23 +160,8 @@ const SignUp = () => {
             <button
               type="submit"
               className="w-full h-[62px] text-[20px] text-white bg-green-700 rounded-full hover:bg-green-800"
-              onClick={() => navigate('/dashboard')}
             >
               Create Account
-            </button>
-
-            {/* Divider and Google Sign Up Button */}
-            <div className="flex items-center justify-center space-x-4 text-gray-500">
-              <span className="border-t border-gray-300 w-20"></span>
-              <span>or sign up with</span>
-              <span className="border-t border-gray-300 w-20"></span>
-            </div>
-            <button
-              type="button"
-              className="flex items-center justify-center w-full h-[50px] bg-white border border-gray-300 rounded-full shadow-md hover:shadow-lg"
-            >
-              <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-6 h-6 mr-2" />
-              <span className="text-gray-600">Google</span>
             </button>
           </form>
         </div>
