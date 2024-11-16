@@ -1,8 +1,30 @@
-// Dashboard.js
-import React from "react";
-import { FaUpload, FaExclamationTriangle, FaCalendarAlt, FaChartBar, FaBoxOpen } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { FaUpload, FaExclamationTriangle, FaCalendarAlt } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Dashboard = () => {
+  const [products, setProducts] = useState([]); 
+  const [totalStock, setTotalStock] = useState(0);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/products");
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const total = products.reduce((sum, product) => sum + product.stock, 0);
+    setTotalStock(total);
+  }, [products]);
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen space-y-4">
       {/* Header Section */}
@@ -15,9 +37,9 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center space-x-2 bg-white text-green-800 p-2 rounded-md shadow-sm cursor-pointer">
             <FaUpload className="text-lg" />
-            <a href="#" className="text-sm font-medium underline">
+            <Link to="/produk" className="text-sm font-medium underline">
               Buat Produk Pertamamu
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -33,7 +55,7 @@ const Dashboard = () => {
 
       {/* Main Dashboard Content */}
       <div className="space-y-6">
-        {/* Performa Stock Section - Full Width */}
+        {/* Performa Stock Section */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold">Performa Stock</h2>
@@ -43,7 +65,7 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="text-3xl font-bold text-gray-800">
-            Total Barang Masuk: <span className="text-4xl">0</span>
+            Total Barang Masuk: <span className="text-4xl">{totalStock}</span>
           </div>
         </div>
 
@@ -90,6 +112,7 @@ const Dashboard = () => {
               </tbody>
             </table>
           </div>
+
         </div>
       </div>
     </div>
