@@ -134,7 +134,7 @@ function DropdownMenu({ icon, label, isActive, items }) {
           />
         </div>
         <div
-          className={`text-sm font-normal leading-[21px] ${
+          className={`text-sm font-normal ${
             isActive ? "text-[#16423c]" : "text-[#2f6d64]"
           }`}
         >
