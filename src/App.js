@@ -12,6 +12,7 @@ import LaporanPage from './pages/LaporanPage';
 import Warehouse from './pages/Gudang';
 import Kedaluarsa from './pages/PengaturanKedaluarsa';
 import PusatData from './pages/PusatData';
+import InOut from './pages/InOutPage';
 
 function App() {
   return (
@@ -28,7 +29,8 @@ function App() {
         <Route path="/gudang" element={<Warehouse />} />
         <Route path="/kedaluarsa" element={<Kedaluarsa />} />
         <Route path="/pusatdata" element={<PusatData />} />
-        <Route path="/dashboard" element={<DashboardPage />} /> {/* Tambahkan route dashboard */}
+        <Route path="/keluarmasuk" element={<InOut />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
     </div>
   );

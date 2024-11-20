@@ -43,42 +43,38 @@ function Newsidebar() {
           path="/dashboard"
           isActive={isActive("/dashboard")}
         />
-        <SidebarItem
+        <DropdownMenu
           icon={faBox}
           label="Produk"
           isActive={isActive("/produk")}
-          path="/produk"
+          items={[
+            { label: "Daftar Produk", path: "/produk" },
+            { label: "Stock Management", path: "/keluarmasuk" }, // Submenu baru
+          ]}
         />
         <DropdownMenu
           icon={faDatabase}
           label="Pusat Data"
           isActive={isActive("/pusatdata")}
-          items={[
-            { label: "Pengguna", path: "/pusatdata" },
-          ]}
+          items={[{ label: "Pengguna", path: "/pusatdata" }]}
         />
         <DropdownMenu
           icon={faWarehouse}
           label="Gudang"
           isActive={isActive("/gudang")}
-          items={[
-            { label: "Lokasi Gudang", path: "/gudang" },
-          ]}
+          items={[{ label: "Lokasi Gudang", path: "/gudang" }]}
         />
         <SidebarItem
           icon={faFileAlt}
           label="Laporan"
           path="/laporan"
           isActive={isActive("/laporan")}
-          items={[
-            { label: "Produk", path: "/laporan" },
-          ]}
         />
         <SidebarItem
           icon={faCogs}
           label="Pengaturan"
-          path={"/editprofile"}
-          isActive={isActive("/editprofile", "/dashboard")} // Menggunakan isActive untuk cek path aktif
+          path="/editprofile"
+          isActive={isActive("/editprofile")}
         />
       </div>
     </div>
@@ -93,14 +89,16 @@ function SidebarItem({ icon, label, path, isActive }) {
           isActive ? "bg-[#457468]/40 border-l-4 border-[#16423c]" : ""
         }`}
       >
-        <div className="w-10 flex justify-start items-center">
-          <FontAwesomeIcon
-            icon={icon}
-            className={`text-sm ${
-              isActive ? "text-[#16423c]" : "text-[#2f6d64]"
-            }`}
-          />
-        </div>
+        {icon && (
+          <div className="w-10 flex justify-start items-center">
+            <FontAwesomeIcon
+              icon={icon}
+              className={`text-sm ${
+                isActive ? "text-[#16423c]" : "text-[#2f6d64]"
+              }`}
+            />
+          </div>
+        )}
         <div
           className={`text-sm font-normal leading-[21px] ${
             isActive ? "text-[#16423c]" : "text-[#2f6d64]"
@@ -154,13 +152,21 @@ function DropdownMenu({ icon, label, isActive, items }) {
       {isOpen && (
         <div className="pl-12 bg-[#f4f7fb]">
           {items.map((item) => (
-            <SidebarItem
+            <div
               key={item.path}
-              icon={icon}
-              label={item.label}
-              path={item.path}
-              isActive={isActive}
-            />
+              className={`h-[58.02px] py-[5px] flex justify-start items-center pl-5 pr-4 py-[13.51px] ${
+                isActive ? "bg-[#457468]/40" : ""
+              }`}
+            >
+              <Link
+                to={item.path}
+                className={`text-sm font-normal leading-[21px] ${
+                  isActive ? "text-[#16423c]" : "text-[#2f6d64]"
+                }`}
+              >
+                {item.label}
+              </Link>
+            </div>
           ))}
         </div>
       )}
