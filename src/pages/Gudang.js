@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Newsidebar from "../components/NewSidebar";
 import Navbar from "../components/Navbar";
+import AddWarehouse from "../components/AddWarehouse";
+import WarehouseForm from "./WarehouseForm";
 import {
   FaCheck,
   FaChartLine,
@@ -13,61 +15,57 @@ import {
 
 const Warehouse = () => {
   const [search, setSearch] = useState("");
+  const [warehouses, setWarehouses] = useState([]);
+  const [isAddWarehouseVisible, setIsAddWarehouseVisible] = useState(false);
+  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const [isFormVisible, setIsFormVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
 
-  // Daftar Gudang (Data contoh)
-  const warehouses = [
-    {
-      id: "25509",
-      name: "Gudang A",
-      address: "Doloksanggul, No 229",
-      detail: "Detail A",
-    },
-    {
-      id: "25510",
-      name: "Gudang B",
-      address: "Doloksanggul, No 230",
-      detail: "Detail B",
-    },
-    {
-      id: "25511",
-      name: "Gudang C",
-      address: "Doloksanggul, No 231",
-      detail: "Detail C",
-    },
-    {
-      id: "25512",
-      name: "Gudang D",
-      address: "Doloksanggul, No 232",
-      detail: "Detail D",
-    },
-    {
-      id: "25513",
-      name: "Gudang E",
-      address: "Doloksanggul, No 233",
-      detail: "Detail E",
-    },
-    {
-      id: "25514",
-      name: "Gudang F",
-      address: "Doloksanggul, No 234",
-      detail: "Detail F",
-    },
-    {
-      id: "25515",
-      name: "Gudang G",
-      address: "Doloksanggul, No 235",
-      detail: "Detail G",
-    },
-  ];
+  useEffect(() => {
+    // Fetch warehouse data from API
+    const fetchData = async () => {
+      const response = await fetch("http://localhost:5000/api/gudang");
+      const data = await response.json();
+      setWarehouses(data);
+    };
+    fetchData();
+  }, []);
 
-  // Filter data berdasarkan pencarian
+  const toggleAddWarehouseModal = () => {
+    setIsAddWarehouseVisible(!isAddWarehouseVisible);
+  };
+
+  const addNewWarehouse = (newWarehouse) => {
+    setWarehouses([...warehouses, newWarehouse]);
+  };
+
+  const openForm = (warehouse) => {
+    setSelectedWarehouse(warehouse);
+    setIsFormVisible(true);
+  };
+
+  const closeForm = () => {
+    setIsFormVisible(false);
+    setSelectedWarehouse(null);
+  };
+
+  const handleSave = (updatedWarehouse) => {
+    setWarehouses((prev) =>
+      prev.map((wh) => (wh.id === updatedWarehouse.id ? updatedWarehouse : wh))
+    );
+    closeForm();
+  };
+
+  const handleDelete = (id) => {
+    setWarehouses((prev) => prev.filter((wh) => wh.id !== id));
+    closeForm();
+  };
+
   const filteredWarehouses = warehouses.filter((warehouse) =>
     warehouse.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentWarehouses = filteredWarehouses.slice(
@@ -75,7 +73,6 @@ const Warehouse = () => {
     indexOfLastItem
   );
 
-  // Pagination buttons
   const pageNumbers = [];
   for (
     let i = 1;
@@ -85,10 +82,8 @@ const Warehouse = () => {
     pageNumbers.push(i);
   }
 
-  // Handle page change
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Handle download data as CSV
   const downloadCSV = () => {
     const csvData =
       "ID,Name,Address,Detail\n" +
@@ -147,7 +142,10 @@ const Warehouse = () => {
                   </th>
                   <th className="py-4 px-6 text-gray-500">
                     <div className="flex justify-end">
-                      <button className="bg-[#467469] text-white p-3 rounded-full flex items-center">
+                      <button
+                        className="bg-[#467469] text-white p-3 rounded-full flex items-center"
+                        onClick={toggleAddWarehouseModal}
+                      >
                         <FaPlus className="mr-2" /> Tambah Gudang
                       </button>
                     </div>
@@ -184,10 +182,23 @@ const Warehouse = () => {
                         {warehouse.address}
                       </td>
                       <td className="py-4 text-left px-6">
-                        {warehouse.detail}
+                        <a
+                          href={`https://www.google.com/maps/search/?q=${encodeURIComponent(
+                            warehouse.detail
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          Cek Maps
+                        </a>
                       </td>
+
                       <td className="py-4 text-center px-6">
-                        <button className="bg-gray-500 text-white p-2 rounded ml-2">
+                        <button
+                          className="bg-gray-500 text-white p-2 rounded ml-2"
+                          onClick={() => openForm(warehouse)}
+                        >
                           <FaCog />
                         </button>
                       </td>
@@ -236,6 +247,20 @@ const Warehouse = () => {
           </div>
         </div>
       </div>
+      {isAddWarehouseVisible && (
+        <AddWarehouse
+          onClose={toggleAddWarehouseModal}
+          onSave={addNewWarehouse}
+        />
+      )}
+      {isFormVisible && (
+        <WarehouseForm
+          warehouse={selectedWarehouse}
+          onClose={closeForm}
+          onSave={handleSave}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 };
