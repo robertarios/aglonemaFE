@@ -13,6 +13,8 @@ import {
 } from "react-icons/fa";
 
 const Produk = () => {
+  const [showTotalStockModal, setShowTotalStockModal] = useState(false);
+  const [totalStock, setTotalStock] = useState(0);
   const [notificationType, setNotificationType] = useState("success"); // 'success' atau 'error'
   const [notificationMessage, setNotificationMessage] = useState("");
   const [showNotification, setShowNotification] = useState(false);
@@ -34,6 +36,16 @@ const Produk = () => {
     return filteredProducts.slice(startIndex, endIndex);
   };
 
+  const fetchTotalStock = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/products/total-stock");
+      setTotalStock(response.data.totalStock); // Simpan total stok ke state
+      setShowTotalStockModal(true); // Tampilkan modal setelah data diambil
+    } catch (error) {
+      console.error("Error fetching total stock:", error);
+    }
+  };
+  
   const handleViewDetails = (product) => {
     setSelectedProduct(product);
     setShowDetailModal(true);
@@ -364,6 +376,23 @@ const Produk = () => {
 
   return (
     <div className="p-6">
+      {showTotalStockModal && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white p-6 rounded shadow-lg w-80">
+      <h2 className="text-xl font-semibold text-center mb-4">Total Seluruh Asset</h2>
+      <p className="text-center text-lg">Jumlah Stok: <strong>{totalStock}</strong></p>
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={() => setShowTotalStockModal(false)}
+          className="px-4 py-2 bg-green-700 text-white rounded-full hover:bg-green-800"
+        >
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       {/* Notifikasi */}
       {showNotification && (
         <div
@@ -385,9 +414,12 @@ const Produk = () => {
           </h1>
         </div>
         <div className="flex items-center space-x-4 text-gray-500">
-          <button className="flex items-center text-green-700 space-x-1">
-            <FaList className="mr-1" /> <span>Total Seluruh Asset</span>
-          </button>
+        <button
+          className="flex items-center text-green-700 space-x-1"
+          onClick={fetchTotalStock} // Memanggil fungsi fetchTotalStock
+        >
+          <FaList className="mr-1" /> <span>Total Seluruh Asset</span>
+        </button>
         </div>
       </div>
 
@@ -436,9 +468,9 @@ const Produk = () => {
         <div className="flex justify-between items-center p-4 bg-gray-100 border-b border-gray-300">
           <h1 className="text-lg font-semibold">Daftar Produk</h1>
           <div className="flex items-center space-x-4">
-            <button className="flex items-center text-gray-500">
+            {/* <button className="flex items-center text-gray-500">
               <FaHistory className="mr-1" /> Histori Data
-            </button>
+            </button> */}
             <button
               onClick={() => {
                 setShowModal(true);
