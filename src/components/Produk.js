@@ -13,6 +13,10 @@ import {
 } from "react-icons/fa";
 
 const Produk = () => {
+  const [notificationType, setNotificationType] = useState("success"); // 'success' atau 'error'
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const [showNotification, setShowNotification] = useState(false);
+  const [errors, setErrors] = useState({});
   const [warehouses, setWarehouses] = useState([]);
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -37,6 +41,21 @@ const Produk = () => {
 
   const getTotalPages = () => {
     return Math.ceil(filteredProducts.length / itemsPerPage);
+  };
+
+  const validateFields = () => {
+    const newErrors = {};
+
+    if (!newProduct.sku) newErrors.sku = "SKU tidak boleh kosong";
+    if (!newProduct.name) newErrors.name = "Nama produk tidak boleh kosong";
+    if (!newProduct.stock) newErrors.stock = "Jumlah stok tidak boleh kosong";
+    if (!newProduct.unit) newErrors.unit = "Satuan tidak boleh kosong";
+    if (!newProduct.status)
+      newErrors.status = "Status produk tidak boleh kosong";
+    if (!selectedWarehouse) newErrors.location = "Lokasi gudang harus dipilih";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Return true jika tidak ada error
   };
 
   const fetchWarehouses = async () => {
@@ -125,6 +144,8 @@ const Produk = () => {
 
   // Menambah produk baru
   const handleAddProduct = async () => {
+    if (!validateFields()) return;
+
     const formData = new FormData();
     formData.append("sku", newProduct.sku);
     formData.append("name", newProduct.name);
@@ -155,6 +176,12 @@ const Produk = () => {
         image: null,
       });
       setSelectedWarehouse(""); // Reset dropdown
+      // Tampilkan notifikasi sukses
+      setNotificationMessage("Produk berhasil ditambahkan.");
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
     } catch (error) {
       console.error("Error adding product:", error);
     }
@@ -162,28 +189,81 @@ const Produk = () => {
 
   // Mengatur produk untuk diedit
   const handleEditProduct = (product) => {
-    setNewProduct(product);
+    setNewProduct({
+      id: product.id,
+      sku: product.sku || "",
+      name: product.name || "",
+      stock: product.stock || 0,
+      unit: product.unit || "",
+      status: product.status || "",
+      location: product.location || "",
+      image: null, // Gambar biasanya tidak diambil langsung
+      shelfLocation: product.shelfLocation || "",
+    });
+    setSelectedWarehouse(product.location || "");
+    setSelectedProduct(product);
     setEditMode(true);
     setShowModal(true);
   };
 
   // Memperbarui produk yang diedit
   const handleUpdateProduct = async () => {
+    if (!selectedProduct) {
+      console.error("Produk yang dipilih tidak ditemukan.");
+      setNotificationMessage("Gagal mengupdate produk. Produk tidak valid.");
+      setNotificationType("error");
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000);
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("sku", newProduct.sku);
-    formData.append("name", newProduct.name);
-    formData.append("stock", newProduct.stock);
-    formData.append("unit", newProduct.unit);
-    formData.append("status", newProduct.status);
-    formData.append("location", selectedWarehouse);
+
+    // Tambahkan validasi hanya untuk bagian yang berubah
+    if (
+      newProduct.sku !== selectedProduct.sku &&
+      newProduct.sku.trim() !== ""
+    ) {
+      formData.append("sku", newProduct.sku);
+    }
+    if (
+      newProduct.name !== selectedProduct.name &&
+      newProduct.name.trim() !== ""
+    ) {
+      formData.append("name", newProduct.name);
+    }
+    if (
+      newProduct.stock !== selectedProduct.stock &&
+      !isNaN(newProduct.stock)
+    ) {
+      formData.append("stock", newProduct.stock);
+    }
+    if (
+      newProduct.unit !== selectedProduct.unit &&
+      newProduct.unit.trim() !== ""
+    ) {
+      formData.append("unit", newProduct.unit);
+    }
+    if (
+      newProduct.status !== selectedProduct.status &&
+      newProduct.status.trim() !== ""
+    ) {
+      formData.append("status", newProduct.status);
+    }
+    if (selectedWarehouse && selectedWarehouse !== selectedProduct.location) {
+      formData.append("location", selectedWarehouse);
+    }
     if (newProduct.image) {
       formData.append("image", newProduct.image);
     }
-
-    if (newProduct.shelfLocation) {
+    if (
+      newProduct.shelfLocation !== selectedProduct.shelfLocation &&
+      newProduct.shelfLocation.trim() !== ""
+    ) {
       formData.append("shelf_location", newProduct.shelfLocation);
     }
 
+    // Simpan data meskipun tidak ada perubahan
     try {
       await axios.put(
         `http://localhost:5000/api/products/${newProduct.id}`,
@@ -198,12 +278,23 @@ const Produk = () => {
         sku: "",
         name: "",
         stock: 0,
+        unit: "",
         status: "",
         location: "",
         image: null,
       });
+      setNotificationMessage("Produk berhasil diupdate.");
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
     } catch (error) {
       console.error("Error updating product:", error);
+      setNotificationMessage("Gagal mengupdate produk. Coba lagi.");
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
     }
   };
 
@@ -223,8 +314,21 @@ const Produk = () => {
       fetchProducts();
       setShowConfirmDeleteModal(false);
       setProductToDelete(null);
+      // Tambahkan notifikasi sukses
+      setNotificationMessage("Produk berhasil dihapus.");
+      setNotificationType("success");
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
     } catch (error) {
       console.error("Error deleting product:", error);
+      // Tambahkan notifikasi gagal jika terjadi error
+      setNotificationMessage("Gagal menghapus produk. Coba lagi.");
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
     }
   };
 
@@ -260,6 +364,19 @@ const Produk = () => {
 
   return (
     <div className="p-6">
+      {/* Notifikasi */}
+      {showNotification && (
+        <div
+          className={`fixed top-4 right-4 px-6 py-4 rounded-lg shadow-lg z-50 ${
+            notificationType === "success"
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
+          }`}
+        >
+          <p>{notificationMessage}</p>
+        </div>
+      )}
+
       {/* Header Section */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex space-x-6">
@@ -355,14 +472,16 @@ const Produk = () => {
                 <tr
                   key={product.id}
                   className="border-b border-gray-300 hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleViewDetails(product)} // Tambahkan ini
+                  onClick={() => handleViewDetails(product)}
                 >
-                  <td className="py-3 px-4">{product.sku}</td>
-                  <td className="py-3 px-4">{product.name}</td>
-                  <td className="py-3 px-4">{product.stock}</td>
-                  <td className="py-3 px-4">{product.status}</td>
-                  <td className="py-3 px-4">{product.warehouse_name}</td>
-                  <td className="py-3 px-4 flex space-x-2">
+                  <td className="py-3 px-4 text-left">{product.sku}</td>
+                  <td className="py-3 px-4 text-left">{product.name}</td>
+                  <td className="py-3 px-4 text-left">{product.stock}</td>
+                  <td className="py-3 px-4 text-left">{product.status}</td>
+                  <td className="py-3 px-4 text-left">
+                    {product.warehouse_name}
+                  </td>
+                  <td className="py-3 px-4 text-left flex space-x-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation(); // Hindari membuka modal detail
@@ -653,6 +772,9 @@ const Produk = () => {
                       setNewProduct({ ...newProduct, sku: e.target.value })
                     }
                   />
+                  {errors.sku && (
+                    <span className="text-red-500 text-sm">{errors.sku}</span>
+                  )}
                 </div>
 
                 {/* Input Nama Produk */}
@@ -669,6 +791,9 @@ const Produk = () => {
                       setNewProduct({ ...newProduct, name: e.target.value })
                     }
                   />
+                  {errors.name && (
+                    <span className="text-red-500 text-sm">{errors.name}</span>
+                  )}
                 </div>
 
                 {/* Input Jumlah Stok dan Satuan */}
@@ -689,6 +814,11 @@ const Produk = () => {
                         })
                       }
                     />
+                    {errors.stock && (
+                      <span className="text-red-500 text-sm">
+                        {errors.stock}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col items-start">
                     <label className="text-gray-700 font-medium mb-2">
@@ -703,6 +833,11 @@ const Produk = () => {
                         setNewProduct({ ...newProduct, unit: e.target.value })
                       }
                     />
+                    {errors.unit && (
+                      <span className="text-red-500 text-sm">
+                        {errors.unit}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -722,6 +857,11 @@ const Produk = () => {
                     <option value="Tersedia">Tersedia</option>
                     <option value="Habis">Habis</option>
                   </select>
+                  {errors.status && (
+                    <span className="text-red-500 text-sm">
+                      {errors.status}
+                    </span>
+                  )}
                 </div>
 
                 {/* Input Lokasi Gudang */}
@@ -741,6 +881,11 @@ const Produk = () => {
                       </option>
                     ))}
                   </select>
+                  {errors.location && (
+                    <span className="text-red-500 text-sm">
+                      {errors.location}
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -789,29 +934,28 @@ const Produk = () => {
       {/* Detail modal */}
       {/* Modal Detail Produk */}
       {productToDelete && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-      <h2 className="text-xl font-semibold mb-4">
-        Apakah Anda yakin ingin menghapus produk ini?
-      </h2>
-      <div className="flex justify-center space-x-4 mt-6">
-        <button
-          onClick={closePopupDelete}
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400"
-        >
-          Batal
-        </button>
-        <button
-          onClick={confirmDeleteProduct}
-          className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600"
-        >
-          Hapus
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+            <h2 className="text-xl font-semibold mb-4">
+              Apakah Anda yakin ingin menghapus produk ini?
+            </h2>
+            <div className="flex justify-center space-x-4 mt-6">
+              <button
+                onClick={closePopupDelete}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmDeleteProduct}
+                className="px-4 py-2 bg-red-500 text-white rounded-full hover:bg-red-600"
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
