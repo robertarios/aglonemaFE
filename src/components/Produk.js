@@ -539,85 +539,86 @@ const Produk = () => {
           </table>
           {/* Pagination */}
           <div className="flex justify-end mt-4 pr-4 mb-6">
-            <nav>
-              <ul className="flex items-center space-x-2">
-                {/* First Page */}
-                <li>
+          <nav>
+            <ul className="flex items-center space-x-1">
+              {/* First Page */}
+              <li>
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className={`h-8 w-8 flex items-center justify-center rounded ${
+                    currentPage === 1
+                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                  }`}
+                >
+                  «
+                </button>
+              </li>
+
+              {/* Previous Page */}
+              <li>
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`h-8 w-8 flex items-center justify-center rounded ${
+                    currentPage === 1
+                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                  }`}
+                >
+                  ‹
+                </button>
+              </li>
+
+              {/* Page Numbers */}
+              {Array.from({ length: getTotalPages() }, (_, index) => (
+                <li key={index}>
                   <button
-                    onClick={() => setCurrentPage(1)}
-                    disabled={currentPage === 1}
-                    className={`px-3 py-1 rounded-full ${
-                      currentPage === 1
-                        ? "bg-gray-300"
-                        : "bg-gray-200 hover:bg-gray-400"
+                    onClick={() => handlePageClick(index + 1)}
+                    className={`h-8 w-8 flex items-center justify-center rounded ${
+                      currentPage === index + 1
+                        ? "bg-green-700 text-white"
+                        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
                     }`}
                   >
-                    «
+                    {index + 1}
                   </button>
                 </li>
+              ))}
 
-                {/* Previous Page */}
-                <li>
-                  <button
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className={`px-3 py-1 rounded-full ${
-                      currentPage === 1
-                        ? "bg-gray-300"
-                        : "bg-gray-200 hover:bg-gray-400"
-                    }`}
-                  >
-                    ‹
-                  </button>
-                </li>
+              {/* Next Page */}
+              <li>
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === getTotalPages()}
+                  className={`h-8 w-8 flex items-center justify-center rounded ${
+                    currentPage === getTotalPages()
+                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                  }`}
+                >
+                  ›
+                </button>
+              </li>
 
-                {/* Page Numbers */}
-                {Array.from({ length: getTotalPages() }, (_, index) => (
-                  <li key={index}>
-                    <button
-                      onClick={() => handlePageClick(index + 1)}
-                      className={`px-3 py-1 rounded-full ${
-                        currentPage === index + 1
-                          ? "bg-green-700 text-white"
-                          : "bg-gray-200 hover:bg-gray-400"
-                      }`}
-                    >
-                      {index + 1}
-                    </button>
-                  </li>
-                ))}
+              {/* Last Page */}
+              <li>
+                <button
+                  onClick={() => setCurrentPage(getTotalPages())}
+                  disabled={currentPage === getTotalPages()}
+                  className={`h-8 w-8 flex items-center justify-center rounded ${
+                    currentPage === getTotalPages()
+                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                  }`}
+                >
+                  »
+                </button>
+              </li>
+            </ul>
+          </nav>
 
-                {/* Next Page */}
-                <li>
-                  <button
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage === getTotalPages()}
-                    className={`px-3 py-1 rounded-full ${
-                      currentPage === getTotalPages()
-                        ? "bg-gray-300"
-                        : "bg-gray-200 hover:bg-gray-400"
-                    }`}
-                  >
-                    ›
-                  </button>
-                </li>
-
-                {/* Last Page */}
-                <li>
-                  <button
-                    onClick={() => setCurrentPage(getTotalPages())}
-                    disabled={currentPage === getTotalPages()}
-                    className={`px-3 py-1 rounded-full ${
-                      currentPage === getTotalPages()
-                        ? "bg-gray-300"
-                        : "bg-gray-200 hover:bg-gray-400"
-                    }`}
-                  >
-                    »
-                  </button>
-                </li>
-              </ul>
-            </nav>
           </div>
         </div>
       </div>
