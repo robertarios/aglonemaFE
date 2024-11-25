@@ -1,67 +1,130 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios"; // Import Axios for API requests
 import Newsidebar from "../components/NewSidebar";
 import Navbar from "../components/Navbar";
-import {
-  FaCheck,
-  FaChartLine,
-  FaCog,
-  FaSearch,
-  FaHistory,
-  FaPlus,
-} from "react-icons/fa";
+import { FaSearch, FaCog, FaPlus, FaRegSadTear } from "react-icons/fa";
+import DataEditModal from "../components/DataEditModal";
+import AddUserModal from "../components/AddUserModal";
 
 const PusatData = () => {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const [selectedData, setSelectedData] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  // Data Pusat Data (Contoh Data)
-  const data = [
-    {
-      id: "25509",
-      name: "John Doe",
-      email: "john.doe@example.com",
-      accessLevel: "Admin",
-      dataCenter: "Pusat Data A",
-    },
-  ];
+  const [users, setUsers] = useState([]); // State to store user data
 
-  // Filter data berdasarkan pencarian
-  const filteredData = data.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
+  // Fetch user data from the backend
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/pusatdata")
+      .then((response) => setUsers(response.data))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  // Filter users based on search
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(search.toLowerCase())
   );
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Pagination buttons
   const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(filteredData.length / itemsPerPage); i++) {
+  for (let i = 1; i <= Math.ceil(filteredUsers.length / itemsPerPage); i++) {
     pageNumbers.push(i);
   }
 
-  // Handle page change
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Handle download data as CSV
-  const downloadCSV = () => {
-    const csvData =
-      "ID,Name,Email,Access Level,Pusat Data\n" +
-      data
-        .map(
-          (item) =>
-            `${item.id},${item.name},${item.email},${item.accessLevel},${item.dataCenter}`
-        )
-        .join("\n");
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "data.csv";
-    a.click();
+  // Handle opening the modal to edit data
+  const handleEditClick = (user) => {
+    setSelectedData(user);
+    setIsModalOpen(true);
   };
+
+  // Handle closing the modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedData(null);
+  };
+
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => setModalOpen(false);
+  
+  const handleUserUpdated = (updatedUser) => {
+    if (updatedUser) {
+      // Update the user data in the state
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === updatedUser.id ? updatedUser : user
+        )
+      );
+    }
+  };
+
+  // Handle saving the edited user data
+  const handleSave = (updatedData) => {
+    axios
+      .put(`http://localhost:5000/api/pusatdata/${updatedData.id}`, updatedData)
+      .then((response) => {
+        // Memperbarui state users setelah data berhasil diperbarui
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === updatedData.id ? response.data : user
+          )
+        );
+        handleCloseModal(); // Menutup modal setelah update
+      })
+      .catch((error) => {
+        console.error("Error updating data:", error);
+        alert("There was an error updating the data.");
+      });
+  };
+  
+
+  // Handle deleting the user data
+  const handleDelete = (id) => {
+    axios
+      .delete(`http://localhost:5000/api/pusatdata/${id}`)
+      .then(() => {
+        // Update state users setelah penghapusan
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+        handleCloseModal(); // Menutup modal
+      })
+      .catch((error) => {
+        console.error("Error deleting data:", error);
+        alert("There was an error deleting the data.");
+      });
+  };
+  
+
+  const addUser = async (newUser) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/pusatdata", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        // Menambahkan pengguna baru ke dalam state users
+        setUsers((prevUsers) => [...prevUsers, result]);
+      } else {
+        console.error("Failed to add user");
+      }
+    } catch (error) {
+      console.error("Error adding user:", error);
+    }
+  };
+  
 
   return (
     <div className="flex bg-[#FAFAFA]">
@@ -72,7 +135,6 @@ const PusatData = () => {
           <h2 className="text-lg font-bold text-[#272d3b] mb-4 text-left relative">
             Daftar Pengguna
           </h2>
-
           <hr className="border-t border-[#e0e0e0] mb-4" />
           <div className="flex justify-between items-center mb-4">
             <div className="relative w-1/4">
@@ -86,11 +148,6 @@ const PusatData = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="flex items-center text-[#467469] p-2 font-semibold rounded">
-                <FaHistory className="mr-2 text-black" /> History Data
-              </button>
             </div>
           </div>
 
@@ -106,7 +163,9 @@ const PusatData = () => {
                   </th>
                   <th className="py-4 px-6 text-gray-500">
                     <div className="flex justify-end">
-                      <button className="bg-[#467469] text-white p-3 rounded-full flex items-center">
+                      <button className="bg-[#467469] text-white p-3 rounded-full flex items-center"
+                        onClick={openModal}
+                      >
                         <FaPlus className="mr-2" /> Tambah Pengguna
                       </button>
                     </div>
@@ -131,72 +190,66 @@ const PusatData = () => {
                   <th className="text-left py-4 px-6 text-gray-500 font-semibold">
                     Pusat Data
                   </th>
-                  <th className="text-right py-4 px-6 text-gray-500 font-semibold">
-                    <p className="mr-10">Aksi</p>
-                  </th>
+                  <th className="py-4 px-6 text-gray-500">Aksi</th>
                 </tr>
               </thead>
+
               <tbody>
-                {currentData.length > 0 ? (
-                  currentData.map((item) => (
-                    <tr key={item.id} className="border-b">
-                      <td className="py-4 text-left px-6">{item.id}</td>
-                      <td className="py-4 text-left px-6">{item.name}</td>
-                      <td className="py-4 text-left px-6">{item.email}</td>
+                {currentUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="py-4 text-center px-6">
+                      <div className="flex flex-col items-center justify-center">
+                        <FaRegSadTear className="text-gray-400 text-4xl mb-4" />
+                        <span className="text-gray-500">
+                          Tambah data pengguna anda
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  currentUsers.map((user) => (
+                    <tr key={user.id} className="border-b">
+                      <td className="py-4 text-left px-6">{user.id}</td>
+                      <td className="py-4 text-left px-6">{user.name}</td>
+                      <td className="py-4 text-left px-6">{user.email}</td>
                       <td className="py-4 text-left px-6">
-                        {item.accessLevel}
+                        {user.access_level}
                       </td>
-                      <td className="py-4 text-left px-6">{item.dataCenter}</td>
-                      <td className="py-4 text-right pr-8 px-6">
-                        <button className="bg-gray-300 text-black p-2 rounded mr-8">
+                      <td className="py-4 text-left px-6">
+                        {user.data_center}
+                      </td>
+                      <td className="py-4 text-center pr-8 px-6">
+                        <button
+                          onClick={() => handleEditClick(user)}
+                          className="bg-gray-300 text-black p-2 rounded ml-3"
+                        >
                           <FaCog />
                         </button>
                       </td>
                     </tr>
                   ))
-                ) : (
-                  <tr>
-                    <td colSpan="6" className="py-8 text-center">
-                      <div className="flex flex-col items-center">
-                        <FaChartLine className="text-5xl text-blue-500 mb-2" />
-                        <div className="text-gray-700 text-lg font-medium">
-                          Tidak Ada Data
-                        </div>
-                        <ul className="text-gray-500 text-sm mt-2 space-y-1">
-                          <li className="flex items-center">
-                            <FaCheck className="mr-2 text-green-600" /> Tidak
-                            ada data pengguna yang ditemukan
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
                 )}
               </tbody>
             </table>
-
-            <div className="flex justify-end mt-4">
-              <div className="flex items-center space-x-1">
-                <button className="px-3 py-1 bg-gray-200 text-gray-500 rounded-l">
-                  «
-                </button>
-                <button className="px-3 py-1 bg-gray-200 text-gray-500">
-                  ‹
-                </button>
-                <button className="px-3 py-1 bg-green-800 text-white">
-                  {currentPage}
-                </button>
-                <button className="px-3 py-1 bg-gray-200 text-gray-500">
-                  ›
-                </button>
-                <button className="px-3 py-1 bg-gray-200 text-gray-500 rounded-r">
-                  »
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      <DataEditModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSave}
+        onDelete={handleDelete}
+        data={selectedData}
+        onUserUpdated={handleUserUpdated}
+      />
+
+      <AddUserModal
+        isOpen={modalOpen}
+        closeModal={closeModal}
+        addUser={addUser}
+      />
     </div>
   );
 };
