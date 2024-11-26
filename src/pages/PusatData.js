@@ -188,7 +188,7 @@ const PusatData = () => {
                     Hak Akses
                   </th>
                   <th className="text-left py-4 px-6 text-gray-500 font-semibold">
-                    Pusat Data
+                    Gudang
                   </th>
                   <th className="py-4 px-6 text-gray-500">Aksi</th>
                 </tr>

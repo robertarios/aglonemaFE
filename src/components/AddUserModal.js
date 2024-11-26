@@ -63,7 +63,7 @@ const AddUserModal = ({ isOpen, closeModal, addUser }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2">Pusat Data</label>
+            <label className="block text-sm font-semibold mb-2">Nama Gudang</label>
             <input
               type="text"
               name="dataCenter"

@@ -1,10 +1,29 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FaBars, FaBell, FaQuestionCircle } from "react-icons/fa";
 import { HiChevronDown } from "react-icons/hi";
 import { useLocation } from "react-router-dom";
 
 const Navbar = () => {
+  const [username, setUsername] = useState("");
   const location = useLocation();
+
+  const isActive = (path) => location.pathname.startsWith(path);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    console.log("userId from localStorage:", userId); // Debug log
+    if (userId) {
+      fetch(`http://localhost:5000/api/users/${userId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("User data fetched:", data); // Debug log
+          if (data.name) {
+            setUsername(data.name);
+          }
+        })
+        .catch((error) => console.error("Error fetching user:", error));
+    }
+  }, []);
 
   // Tentukan judul berdasarkan path halaman saat ini
   const getPageTitle = () => {
@@ -41,7 +60,7 @@ const Navbar = () => {
       <div className="flex items-center space-x-6">
         {/* User Dropdown */}
         <div className="flex items-center cursor-pointer">
-          <span className="text-gray-700">Pengguna</span>
+          <span className="text-gray-700">{username}</span>
           <HiChevronDown className="text-gray-700 ml-1" />
         </div>
 
