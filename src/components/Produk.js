@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useRef } from "react";
 import unitData from '../assets/units.json';  // Path yang benar dari components ke assets
 import {
+  FaCog,
+  FaEye,
   FaSearch,
   FaPlus,
   FaHistory,
@@ -13,6 +16,7 @@ import {
 } from "react-icons/fa";
 
 const Produk = () => {
+  const [actionRow, setActionRow] = useState(null);
   const [units, setUnits] = useState([]);
   const [showTotalStockModal, setShowTotalStockModal] = useState(false);
   const [totalStock, setTotalStock] = useState(0);
@@ -35,6 +39,11 @@ const Produk = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return filteredProducts.slice(startIndex, endIndex);
+  };
+
+  // Fungsi untuk toggle menu aksi
+  const toggleActionMenu = (id) => {
+    setActionRow(actionRow === id ? null : id);
   };
 
   const fetchTotalStock = async () => {
@@ -528,11 +537,8 @@ const Produk = () => {
             </thead>
             <tbody>
               {getPaginatedData().map((product) => (
-                <tr
-                  key={product.id}
-                  className="border-b border-gray-300 hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleViewDetails(product)}
-                >
+                <tr key={product.id} className="border-b border-gray-300 hover:bg-gray-50">
+
                   <td className="py-3 px-4 text-left">{product.sku}</td>
                   <td className="py-3 px-4 text-left">{product.name}</td>
                   <td className="py-3 px-4 text-left">{product.stock}</td>
@@ -540,26 +546,63 @@ const Produk = () => {
                   <td className="py-3 px-4 text-left">
                     {product.warehouse_name}
                   </td>
-                  <td className="py-3 px-4 text-left flex space-x-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // Hindari membuka modal detail
-                        handleEditProduct(product);
-                      }}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // Hindari membuka modal detail
-                        handleDeleteClick(product.id);
-                      }}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <FaTrash />
-                    </button>
-                  </td>
+                  <td className="py-3 px-4 text-left relative">
+  {/* Ikon utama (cog) untuk memunculkan menu aksi */}
+  <button
+    onClick={() => toggleActionMenu(product.id)}
+    className="text-gray-600 hover:text-gray-800"
+  >
+    <FaCog />
+  </button>
+
+  {/* Menu dropdown yang muncul saat cog di klik */}
+  {actionRow === product.id && (
+    <div
+      className="absolute bg-white border rounded shadow-lg z-10 flex flex-col items-center space-y-2"
+      style={{
+        top: "0", // Sejajar dengan ikon cog
+        left: "40px", // Tepat di sebelah kanan ikon cog
+        width: "50px", // Lebar kotak dropdown
+        padding: "8px 4px", // Padding dalam kotak
+      }}
+    >
+      {/* Ikon Lihat Detail */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleViewDetails(product); // Panggil modal detail
+        }}
+        className="hover:text-green-600"
+      >
+        <FaEye className="text-green-500 hover:text-green-700" size={20} />
+      </button>
+
+      {/* Ikon Edit */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleEditProduct(product); // Panggil modal edit
+        }}
+        className="hover:text-blue-700"
+      >
+        <FaEdit className="text-blue-500 hover:text-blue-700" size={20} />
+      </button>
+
+      {/* Ikon Hapus */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDeleteClick(product.id); // Panggil modal hapus
+        }}
+        className="hover:text-red-700"
+      >
+        <FaTrash className="text-red-500 hover:text-red-700" size={20} />
+      </button>
+    </div>
+  )}
+</td>
+
+
                 </tr>
               ))}
             </tbody>
