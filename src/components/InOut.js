@@ -196,6 +196,7 @@ const InOut = () => {
                       <input
                         type="number"
                         value={stock.addStock}
+                        min={0}
                         onChange={(e) =>
                           handleInputChange(stock.sku, "addStock", e.target.value)
                         }
