@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,9 +15,27 @@ import {
 import Logo from "../assets/logodark.png"; // Sesuaikan path sesuai lokasi gambar
 
 function Newsidebar() {
+  const [username, setUsername] = useState("");
   const location = useLocation();
 
   const isActive = (path) => location.pathname.startsWith(path);
+
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    console.log('userId from localStorage:', userId); // Debug log
+    if (userId) {
+      fetch(`http://localhost:5000/api/users/${userId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('User data fetched:', data); // Debug log
+          if (data.name) {
+            setUsername(data.name);
+          }
+        })
+        .catch((error) => console.error('Error fetching user:', error));
+    }
+  }, []);
+  
 
   return (
     <div className="w-64 h-screen bg-[#EDF3FF] shadow flex-col justify-start items-start">
@@ -30,7 +48,7 @@ function Newsidebar() {
       <div className="h-screen bg-[#EDF3FF]">
         <div className="pt-6 pb-8 flex justify-start items-center pl-5 pr-4 py-[13.51px] bg-[#DAE6FF]">
           <div className="text-sm font-normal leading-[21px]">
-            Nama Pengguna
+            {username}
           </div>
           <div className="ml-auto">
             <FontAwesomeIcon icon={faChevronDown} className="text-sm" />

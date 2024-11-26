@@ -13,8 +13,8 @@ const Login = () => {
     email: "",
     password: "",
   });
-   // State untuk pesan error di setiap field
-   const [fieldErrors, setFieldErrors] = useState({
+  // State untuk pesan error di setiap field
+  const [fieldErrors, setFieldErrors] = useState({
     email: "",
     password: "",
   });
@@ -23,7 +23,6 @@ const Login = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  
   // Handle perubahan input
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,7 +31,6 @@ const Login = () => {
     // Hapus error untuk field yang diisi ulang
     setFieldErrors({ ...fieldErrors, [name]: "" });
   };
-
 
   // Handle submit form
   const handleSubmit = async (e) => {
@@ -55,13 +53,18 @@ const Login = () => {
 
     try {
       // Kirim data ke backend
-      const response = await axios.post("http://localhost:5000/api/users/login", {
-        email: formData.email,
-        password: formData.password,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/users/login",
+        {
+          email: formData.email,
+          password: formData.password,
+        }
+      );
 
-      // Jika login berhasil
-      setSuccessMessage(response.data.message); // Simpan pesan sukses
+      const { userId, message } = response.data; // Ambil userId dari respons
+      localStorage.setItem("userId", userId); // Simpan userId ke localStorage
+
+      setSuccessMessage(message); // Simpan pesan sukses
       setShowModal(true); // Tampilkan modal
       setTimeout(() => {
         setShowModal(false); // Tutup modal setelah 3 detik
@@ -80,7 +83,11 @@ const Login = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 relative font-poppins">
       {/* Logo Section */}
       <div className="absolute top-[30px] left-[30px] flex items-center space-x-2">
-        <img src={logoIcon} alt="Aglostok logo" className="w-[69.06px] h-[69.06px]" />
+        <img
+          src={logoIcon}
+          alt="Aglostok logo"
+          className="w-[69.06px] h-[69.06px]"
+        />
         <h1 className="text-[35px] font-bold text-green-700">Aglostok</h1>
       </div>
 
@@ -100,8 +107,6 @@ const Login = () => {
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-          
-
             {/* Email Input */}
             <div className="relative flex flex-col">
               <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
@@ -115,8 +120,12 @@ const Login = () => {
                   className="w-full h-full pl-2 pr-4 text-gray-600 focus:outline-none rounded-full"
                 />
               </div>
-               {/* Error Message for Email (Baru Ditambahkan) */}
-               {fieldErrors.email && <p className="text-red-500 text-sm ml-2 pl-2 w-[150px] text-left">{fieldErrors.email}</p>}
+              {/* Error Message for Email (Baru Ditambahkan) */}
+              {fieldErrors.email && (
+                <p className="text-red-500 text-sm ml-2 pl-2 w-[150px] text-left">
+                  {fieldErrors.email}
+                </p>
+              )}
             </div>
 
             {/* Password Input */}
@@ -133,7 +142,11 @@ const Login = () => {
                 />
               </div>
               {/* Error Message for Password (Baru Ditambahkan) */}
-              {fieldErrors.password && <p className="text-red-500 text-sm ml-2 pl-2 w-[150px] text-left">{fieldErrors.password}</p>}
+              {fieldErrors.password && (
+                <p className="text-red-500 text-sm ml-2 pl-2 w-[150px] text-left">
+                  {fieldErrors.password}
+                </p>
+              )}
             </div>
 
             {/* Forgot Password */}
@@ -161,17 +174,20 @@ const Login = () => {
         </div>
       </div>
 
-       {/* Modal untuk pesan sukses */}
-       {showModal && (
+      {/* Modal untuk pesan sukses */}
+      {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-green-700 text-2xl font-semibold mb-4">Success!</h2>
+            <h2 className="text-green-700 text-2xl font-semibold mb-4">
+              Success!
+            </h2>
             <p className="text-gray-600">{successMessage}</p>
-            <p className="text-sm text-gray-500 mt-4">Redirecting to dashboard...</p>
+            <p className="text-sm text-gray-500 mt-4">
+              Redirecting to dashboard...
+            </p>
           </div>
         </div>
       )}
-      
     </div>
   );
 };
