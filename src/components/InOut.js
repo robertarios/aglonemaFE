@@ -8,9 +8,10 @@ const InOut = () => {
   const [filteredStocks, setFilteredStocks] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false); // For the confirmation modal
   const itemsPerPage = 10;
 
-  // Mengambil data stok dari backend
+  // Fetch stock data from backend
   const fetchStocks = async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/products");
@@ -20,7 +21,7 @@ const InOut = () => {
         outStock: 0,
       }));
       setStocks(updatedData);
-      setFilteredStocks(updatedData); // Pastikan data awal ditampilkan
+      setFilteredStocks(updatedData); // Initialize filtered data
     } catch (error) {
       console.error("Error fetching stocks:", error);
     }
@@ -30,7 +31,7 @@ const InOut = () => {
     fetchStocks();
   }, []);
 
-  // Filter berdasarkan pencarian
+  // Filter stocks based on search input
   const applyFilter = () => {
     if (!searchKeyword.trim()) {
       setFilteredStocks(stocks);
@@ -50,31 +51,7 @@ const InOut = () => {
     applyFilter();
   }, [stocks, searchKeyword]);
 
-  // Fungsi untuk menyimpan stok (add atau out stock)
-  const handleSave = async () => {
-    try {
-      await Promise.all(
-        stocks.map(async (stock) => {
-          const updatedStock = stock.stock + stock.addStock - stock.outStock;
-          await axios.post("http://localhost:5000/api/stock/update-stock", {
-            sku: stock.sku,
-            addStock: stock.addStock,
-            outStock: stock.outStock,
-          });
-          stock.stock = updatedStock;
-          stock.addStock = 0;
-          stock.outStock = 0;
-        })
-      );
-      fetchStocks();
-      alert("Stock updated successfully!");
-    } catch (error) {
-      console.error("Error updating stock:", error);
-      alert("Failed to update stock.");
-    }
-  };
-
-  // Fungsi untuk menangani input stok
+  // Handle input changes for addStock and outStock
   const handleInputChange = (sku, field, value) => {
     setStocks((prevStocks) =>
       prevStocks.map((stock) =>
@@ -83,7 +60,48 @@ const InOut = () => {
     );
   };
 
-  // Pagination helper
+  // Save stock updates
+  const handleSave = async () => {
+    try {
+      const updatedStocks = await Promise.all(
+        stocks.map(async (stock) => {
+          // Check if stock is updated
+          if (stock.addStock > 0 || stock.outStock > 0) {
+            const updatedStock = stock.stock + stock.addStock - stock.outStock;
+  
+            // Prevent negative stock
+            if (updatedStock < 0) {
+              throw new Error(`Stok tidak boleh negatif untuk produk: ${stock.name}`);
+            }
+  
+            // Send PUT request to update the stock in the database
+            await axios.put(`http://localhost:5000/api/products/${stock.sku}`, {
+              stock: updatedStock, // Send updated stock
+            });
+  
+            // Return updated stock for state update
+            return {
+              ...stock,
+              stock: updatedStock, // Update stock value
+              addStock: 0, // Reset addStock
+              outStock: 0, // Reset outStock
+            };
+          }
+          return stock; // No changes for unchanged stocks
+        })
+      );
+  
+      // Update frontend state with updated stocks
+      setStocks(updatedStocks);
+      setFilteredStocks(updatedStocks);
+    } catch (error) {
+      console.error("Error saving stock updates:", error);
+      alert(error.message || "Terjadi kesalahan saat menyimpan perubahan stok.");
+    }
+  };
+
+
+  // Pagination helpers
   const getPaginatedData = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -94,11 +112,27 @@ const InOut = () => {
 
   const handlePageClick = (page) => setCurrentPage(page);
 
+  // Open modal when the save button is clicked
+  const handleSaveButtonClick = () => {
+    setIsModalOpen(true);
+  };
+
+  // Confirm save action
+  const confirmSave = () => {
+    setIsModalOpen(false);
+    handleSave(); // Proceed with saving changes
+  };
+
+  // Cancel save action
+  const cancelSave = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="p-6">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-black-700 border-b-2 ">
+        <h1 className="text-2xl font-semibold text-black-700 border-b-2">
           Keluar Masuk Produk
         </h1>
       </div>
@@ -125,9 +159,15 @@ const InOut = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr className="bg-gray-100 text-black text-left">
-                <th className="py-3 px-6 font-semibold text-left text-[18px] w-32">SKU</th>
-                <th className="py-3 px-6 font-semibold text-left text-[18px] w-64">Nama Produk</th>
-                <th className="py-3 px-1 font-semibold text-left text-[18px] w-24">Stok Saat Ini</th>
+                <th className="py-3 px-6 font-semibold text-left text-[18px] w-32">
+                  SKU
+                </th>
+                <th className="py-3 px-6 font-semibold text-left text-[18px] w-64">
+                  Nama Produk
+                </th>
+                <th className="py-3 px-1 font-semibold text-left text-[18px] w-24">
+                  Stok Saat Ini
+                </th>
                 <th className="py-3 px-6 font-semibold text-left text-[18px] w-32">
                   Add Stok
                 </th>
@@ -135,9 +175,11 @@ const InOut = () => {
                   Out Stok
                 </th>
                 <th className="py-3 px-6 font-semibold text-left text-[18px] w-32">
-                  Add Satuan
+                  Satuan
                 </th>
-                <th className="py-3 px-6 font-semibold text-left text-[18px] w-32">Status</th>
+                <th className="py-3 px-6 font-semibold text-left text-[18px] w-32">
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -170,13 +212,7 @@ const InOut = () => {
                         className="w-full px-2 py-1 border rounded"
                       />
                     </td>
-                    <td className="py-3 px-6 text-left">
-                      <select className="w-full px-2 py-1 border rounded">
-                        <option>Kg</option>
-                        <option>Pcs</option>
-                        <option>Box</option>
-                      </select>
-                    </td>
+                    <td className="py-3 px-6 text-left">{stock.unit}</td>
                     <td className="py-3 px-6 text-left">{stock.status}</td>
                   </tr>
                 ))
@@ -192,17 +228,42 @@ const InOut = () => {
         </div>
       </div>
 
-
-
       {/* Save Button */}
       <div className="flex justify-end mt-6">
         <button
-          onClick={handleSave}
+          onClick={handleSaveButtonClick}
           className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800"
         >
           Simpan
         </button>
       </div>
+
+{/* Confirmation Modal */}
+{isModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="bg-white p-6 rounded-lg shadow-md w-[400px]">
+      <h2 className="text-lg font-medium text-center mb-6">
+        Apakah Anda yakin ingin menyimpan perubahan?
+      </h2>
+      <div className="flex justify-center space-x-4">
+        <button
+          onClick={cancelSave}
+          className="bg-gray-300 text-black px-6 py-2 rounded hover:bg-gray-400 transition"
+        >
+          Batal
+        </button>
+        <button
+          onClick={confirmSave}
+          className="bg-[#467469] text-white px-6 py-2 rounded hover:bg-[#3b5f59] transition"
+        >
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };
