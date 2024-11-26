@@ -1,0 +1,7 @@
+[
+  { "id": "pcs", "nama_satuan": "pcs" },
+  { "id": "kg", "nama_satuan": "kg" },
+  { "id": "liter", "nama_satuan": "liter" },
+  { "id": "meter", "nama_satuan": "meter" },
+  { "id": "box", "nama_satuan": "box" }
+]

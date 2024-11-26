@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import unitData from '../assets/units.json';  // Path yang benar dari components ke assets
 import {
   FaSearch,
   FaPlus,
@@ -13,6 +13,7 @@ import {
 } from "react-icons/fa";
 
 const Produk = () => {
+  const [units, setUnits] = useState([]);
   const [showTotalStockModal, setShowTotalStockModal] = useState(false);
   const [totalStock, setTotalStock] = useState(0);
   const [notificationType, setNotificationType] = useState("success"); // 'success' atau 'error'
@@ -51,6 +52,11 @@ const Produk = () => {
     setShowDetailModal(true);
   };
 
+  useEffect(() => {
+    // Mengambil data satuan dari file JSON yang telah diimpor
+    setUnits(unitData); // Mengisi state units dengan data JSON
+  }, []);
+
   const getTotalPages = () => {
     return Math.ceil(filteredProducts.length / itemsPerPage);
   };
@@ -80,12 +86,33 @@ const Produk = () => {
   };
 
   useEffect(() => {
+    // Fetch data satuan dari API
+    const fetchUnits = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/satuan");
+        setUnits(response.data); // Menyimpan data satuan di state
+      } catch (error) {
+        console.error("Error fetching units:", error);
+      }
+    };
+    fetchUnits();
+  }, []);
+
+  useEffect(() => {
     const fetchWarehouses = async () => {
       const response = await axios.get("http://localhost:5000/api/gudang");
       setWarehouses(response.data);
     };
     fetchWarehouses();
   }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewProduct((prevProduct) => ({
+      ...prevProduct,
+      [name]: value,
+    }));
+  };
 
   const handlePageClick = (page) => {
     setCurrentPage(page);
@@ -853,19 +880,22 @@ const Produk = () => {
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-col items-start">
-                    <label className="text-gray-700 font-medium mb-2">
-                      Satuan *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="pcs"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-300"
-                      value={newProduct.unit || ""}
-                      onChange={(e) =>
-                        setNewProduct({ ...newProduct, unit: e.target.value })
-                      }
-                    />
+                  <div className="flex flex-col items-start mb-4">
+          <label className="text-gray-700 font-medium mb-2">Satuan *</label>
+          <select
+            name="unit"
+            value={newProduct.unit}  // Mengambil nilai yang dipilih dari state
+            onChange={handleChange}  // Menangani perubahan nilai dropdown
+            className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-300"
+          >
+            <option value="">Pilih Satuan</option>
+            {units.map((unit) => (
+              <option key={unit.id} value={unit.id}>
+                {unit.nama_satuan}
+              </option>
+            ))}
+          </select>
+
                     {errors.unit && (
                       <span className="text-red-500 text-sm">
                         {errors.unit}
