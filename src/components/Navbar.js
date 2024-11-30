@@ -83,8 +83,9 @@ const Navbar = () => {
 
         {/* Help Icon */}
         <div className="cursor-pointer" onClick={toggleHelpModal}>
-          <FaQuestionCircle className="text-gray-700" />
+          <FaQuestionCircle className="text-gray-700 text-2xl" /> {/* Tambahkan class text-2xl */}
         </div>
+
 
         {/* Notification Icon */}
         <div className="cursor-pointer relative flex items-center" onClick={toggleModal}>
