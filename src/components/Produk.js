@@ -492,11 +492,11 @@ const Produk = () => {
           />
         </div>
         <button
-          onClick={downloadExcel}
-          className="bg-green-700 text-white px-4 py-2 rounded-full flex items-center space-x-1 hover:bg-green-800"
-        >
-          <FaFileExcel className="mr-1" /> <span>Data Excel</span>
-        </button>
+            onClick={downloadExcel}
+            className="bg-[#467469] text-white px-4 py-2 rounded-full flex items-center space-x-1 hover:bg-[#365951]"
+          >
+            <FaFileExcel className="mr-1" /> <span>Data Excel</span>
+          </button>
       </div>
 
       {/* Product Table */}
@@ -507,15 +507,17 @@ const Produk = () => {
             {/* <button className="flex items-center text-gray-500">
               <FaHistory className="mr-1" /> Histori Data
             </button> */}
-            <button
-              onClick={() => {
-                setShowModal(true);
-                setEditMode(false);
-              }}
-              className="bg-green-700 text-white px-4 py-2 rounded-full hover:bg-green-800 flex items-center"
-            >
-              <FaPlus /> <span>Produk</span>
-            </button>
+           <button
+                onClick={() => {
+                  setShowModal(true);
+                  setEditMode(false);
+                }}
+                className="bg-[#467469] text-white px-4 py-2 rounded-full hover:bg-[#365951] flex items-center"
+              >
+                <FaPlus /> <span>Produk</span>
+              </button>
+
+
           </div>
         </div>
 
