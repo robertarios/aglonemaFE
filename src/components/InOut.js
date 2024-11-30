@@ -65,33 +65,31 @@ const InOut = () => {
     try {
       const updatedStocks = await Promise.all(
         stocks.map(async (stock) => {
-          // Check if stock is updated
           if (stock.addStock > 0 || stock.outStock > 0) {
             const updatedStock = stock.stock + stock.addStock - stock.outStock;
   
-            // Prevent negative stock
-            if (updatedStock < 0) {
-              throw new Error(`Stok tidak boleh negatif untuk produk: ${stock.name}`);
-            }
+            // Log nilai yang dikirimkan
+            console.log(`Updating stock for SKU: ${stock.sku}, Updated stock: ${updatedStock}`);
   
-            // Send PUT request to update the stock in the database
-            await axios.put(`http://localhost:5000/api/products/${stock.sku}`, {
-              stock: updatedStock, // Send updated stock
-            });
+            // Kirim request PUT ke API menggunakan ID (menggunakan `stock.id`, bukan `stock.sku`)
+            const response = await axios.put(
+              `http://localhost:5000/api/products/update-stock/${stock.id}`, // Menggunakan `stock.id`
+              { stock: updatedStock }
+            );
   
-            // Return updated stock for state update
+            console.log('Response from backend:', response.data);
+  
             return {
               ...stock,
-              stock: updatedStock, // Update stock value
-              addStock: 0, // Reset addStock
-              outStock: 0, // Reset outStock
+              stock: updatedStock,
+              addStock: 0,
+              outStock: 0,
             };
           }
-          return stock; // No changes for unchanged stocks
+          return stock;
         })
       );
   
-      // Update frontend state with updated stocks
       setStocks(updatedStocks);
       setFilteredStocks(updatedStocks);
     } catch (error) {
@@ -99,7 +97,6 @@ const InOut = () => {
       alert(error.message || "Terjadi kesalahan saat menyimpan perubahan stok.");
     }
   };
-
 
   // Pagination helpers
   const getPaginatedData = () => {
@@ -186,7 +183,7 @@ const InOut = () => {
               {filteredStocks.length > 0 ? (
                 getPaginatedData().map((stock) => (
                   <tr
-                    key={stock.sku}
+                    key={stock.id}  // Use `id` as the key
                     className="border-b border-gray-300 hover:bg-gray-50"
                   >
                     <td className="py-3 px-6 text-left">{stock.sku}</td>
@@ -196,7 +193,6 @@ const InOut = () => {
                       <input
                         type="number"
                         value={stock.addStock}
-                        min={0}
                         onChange={(e) =>
                           handleInputChange(stock.sku, "addStock", e.target.value)
                         }
@@ -239,32 +235,30 @@ const InOut = () => {
         </button>
       </div>
 
-{/* Confirmation Modal */}
-{isModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div className="bg-white p-6 rounded-lg shadow-md w-[400px]">
-      <h2 className="text-lg font-medium text-center mb-6">
-        Apakah Anda yakin ingin menyimpan perubahan?
-      </h2>
-      <div className="flex justify-center space-x-4">
-        <button
-          onClick={cancelSave}
-          className="bg-gray-300 text-black px-6 py-2 rounded hover:bg-gray-400 transition"
-        >
-          Batal
-        </button>
-        <button
-          onClick={confirmSave}
-          className="bg-[#467469] text-white px-6 py-2 rounded hover:bg-[#3b5f59] transition"
-        >
-          Simpan
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
+      {/* Confirmation Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-md w-[400px]">
+            <h2 className="text-lg font-medium text-center mb-6">
+              Apakah Anda yakin ingin menyimpan perubahan?
+            </h2>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={cancelSave}
+                className="bg-gray-300 text-black px-6 py-2 rounded hover:bg-gray-400 transition"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmSave}
+                className="bg-[#467469] text-white px-6 py-2 rounded hover:bg-[#3b5f59] transition"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
