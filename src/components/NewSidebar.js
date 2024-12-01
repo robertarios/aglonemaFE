@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, Link, useNavigate } from "react-router-dom";  // Ganti useHistory dengan useNavigate
+import { useLocation, Link, useNavigate } from "react-router-dom"; 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTachometerAlt,
@@ -9,7 +9,7 @@ import {
   faFileAlt,
   faCogs,
   faChevronDown,
-  faSignOutAlt, // Ikon logout
+  faSignOutAlt, 
 } from "@fortawesome/free-solid-svg-icons";
 
 // Impor gambar logo
@@ -17,9 +17,10 @@ import Logo from "../assets/logodark.png"; // Sesuaikan path sesuai lokasi gamba
 
 function Newsidebar() {
   const [username, setUsername] = useState("");
-  const [showLogoutModal, setShowLogoutModal] = useState(false);  // State untuk menampilkan modal
+  const [role, setRole] = useState(localStorage.getItem('role') || '');
+  const [showLogoutModal, setShowLogoutModal] = useState(false);  
   const location = useLocation();
-  const navigate = useNavigate();  // Menggunakan useNavigate untuk redirect
+  const navigate = useNavigate();  
 
   const isActive = (path) => location.pathname.startsWith(path);
 
@@ -34,20 +35,22 @@ function Newsidebar() {
           if (data.name) {
             setUsername(data.name);
           }
+          if (role) { 
+            setRole(role); // Set role di state
+          }
         })
         .catch((error) => console.error('Error fetching user:', error));
     }
   }, []);
+  
 
   const handleLogout = () => {
-    // Menutup modal dan logout
     setShowLogoutModal(false);
     localStorage.removeItem('userId');
-    navigate('/login');  // Ganti history.push dengan navigate
+    navigate('/login');
   };
 
   const cancelLogout = () => {
-    // Menutup modal tanpa logout
     setShowLogoutModal(false);
   };
 
@@ -60,14 +63,14 @@ function Newsidebar() {
 
       {/* Sidebar Menu */}
       <div className="h-screen bg-[#EDF3FF]">
-        <div className="pt-6 pb-8 flex justify-start items-center pl-5 pr-4 py-[13.51px] bg-[#DAE6FF]">
-          <div className="text-sm font-normal leading-[21px]">
-            {username}
-          </div>
-          <div className="ml-auto">
-            <FontAwesomeIcon icon={faChevronDown} className="text-sm" />
-          </div>
+      <div className="pt-6 pb-8 flex flex-col justify-start items-start pl-5 pr-4 py-[13.51px] bg-[#DAE6FF]">
+        <div className="text-sm font-normal leading-[21px]">
+          {username}
         </div>
+        <div className="text-sm font-normal text-[#2f6d64] leading-[21px]">
+          {role}
+        </div>
+      </div>
 
         <SidebarItem
           icon={faTachometerAlt}
@@ -113,7 +116,7 @@ function Newsidebar() {
         <div className="absolute bottom-4 w-full">
           <div
             className="h-[58.02px] py-[5px] flex justify-start items-center pl-5 pr-4 py-[13.51px] cursor-pointer"
-            onClick={() => setShowLogoutModal(true)} // Menampilkan modal logout
+            onClick={() => setShowLogoutModal(true)} 
           >
             <div className="w-10 flex justify-start items-center">
               <FontAwesomeIcon
@@ -133,7 +136,6 @@ function Newsidebar() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-72">
             <div className="text-lg font-semibold mb-4">Apakah Anda yakin ingin keluar?</div>
-            {/* Menambahkan mr-2 untuk jarak antar tombol */}
             <div className="flex justify-center">
               <button
                 className="bg-[#457468] text-white px-4 py-2 rounded-lg mr-2"
@@ -148,7 +150,6 @@ function Newsidebar() {
                 No
               </button>
             </div>
-
           </div>
         </div>
       )}

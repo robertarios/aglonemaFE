@@ -6,6 +6,8 @@ import signupImage from "../assets/signupImage.png";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+
+
 const SignUp = () => {
   const navigate = useNavigate();
   // State untuk menyimpan data form
@@ -14,8 +16,20 @@ const SignUp = () => {
     email: "",
     phone: "",
     password: "",
+    role: "admin",
     confirmPassword: "",
   });
+
+  const [selectedRole, setSelectedRole] = useState("admin")
+
+ // Handle changing the role based on selected option
+ const handleRoleChange = (event) => {
+  const { value } = event.target;
+  setFormData({
+    ...formData,
+    role: value, // Change the status field based on the selected option
+  });
+};
 
   // State untuk pesan error di setiap field
   const [fieldErrors, setFieldErrors] = useState({
@@ -67,6 +81,11 @@ const SignUp = () => {
       setFieldErrors(errors); // Set pesan error jika ada
       return;
     }
+
+    setFormData({
+      ...formData,
+      ["role"]: selectedRole, // selected role
+    });
 
     try {
       // Kirim data ke backend
@@ -200,6 +219,20 @@ const SignUp = () => {
                     {fieldErrors.phone}
                   </p>
                 )}
+              </div>
+            </div>
+
+            {/* Role Input */}
+            <div className="relative flex flex-row items-center">
+              <div className="flex flex-col w-full">
+                <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
+                <FaUser className="text-[#457468] text-lg mr-4" />
+                  <label htmlFor="dropdown">Select Role:</label>
+                    <select id="dropdown" value={formData.role} onChange={handleRoleChange}>
+                      <option value="admin">Admin</option>
+                      <option value="user">User</option>
+                    </select>
+                </div>
               </div>
             </div>
 

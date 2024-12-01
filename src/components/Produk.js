@@ -25,7 +25,10 @@ const Produk = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [errors, setErrors] = useState({});
   const [warehouses, setWarehouses] = useState([]);
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [role, setRole] = useState(localStorage.getItem('role') || '');
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
@@ -57,6 +60,7 @@ const Produk = () => {
   };
   
   const handleViewDetails = (product) => {
+    fetchProductImageByID(product.id);
     setSelectedProduct(product);
     setShowDetailModal(true);
   };
@@ -136,7 +140,7 @@ const Produk = () => {
     status: "",
     location: "", // Lokasi Gudang
     image: null, // Foto produk
-    shelfLocation: null,
+    shelf_location: null,
   });
   const [editMode, setEditMode] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
@@ -149,6 +153,17 @@ const Produk = () => {
       const response = await axios.get("http://localhost:5000/api/products");
       setProducts(response.data);
       console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  // Fungsi untuk mengambil data gambar produk dari backend by id
+  const fetchProductImageByID = async (productID) => {
+    try {
+      const response = await fetch (`http://localhost:5000/api/products/image/${productID}`);
+      const imageBlob = await response.blob();
+      setSelectedImage(imageBlob)
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -204,27 +219,22 @@ const Produk = () => {
     if (newProduct.image) {
       formData.append("image", newProduct.image);
     }
-    if (newProduct.shelfLocation) {
-      formData.append("shelf_location", newProduct.shelfLocation);
-    }
+    if (newProduct.shelf_location) {
+      formData.append("shelf_location", newProduct.shelf_location);
+  }
 
     try {
-      await axios.post("http://localhost:5000/api/products", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      fetchProducts();
-      setShowModal(false);
-      setNewProduct({
-        id: "",
-        sku: "",
-        name: "",
-        stock: 0,
-        status: "",
-        location: "",
-        image: null,
-      });
-      setSelectedWarehouse(""); // Reset dropdown
-      // Tampilkan notifikasi sukses
+        await axios.post("http://localhost:5000/api/products", formData, {
+            headers: { 
+              "Content-Type": "multipart/form-data",
+              "Authorization": `Bearer ${token}`
+          },
+        });
+        fetchProducts();
+        setShowModal(false);
+        setNewProduct({ id: "", sku: "", name: "", stock: 0, status: "", location: "", image: null });
+        setSelectedWarehouse(""); // Reset dropdown
+        // Tampilkan notifikasi sukses
       setNotificationMessage("Produk berhasil ditambahkan.");
       setShowNotification(true);
       setTimeout(() => {
@@ -233,25 +243,25 @@ const Produk = () => {
     } catch (error) {
       console.error("Error adding product:", error);
     }
-  };
+};
+
+  // handle batal tambah produk
+  const handleCancelAddProduct = () => {
+    setShowModal(false);
+    setNewProduct({ id: "", sku: "", name: "", stock: 0, status: "", location: "", image: null });
+    setSelectedWarehouse(""); // Reset dropdown
+  }
+
+
 
   // Mengatur produk untuk diedit
   const handleEditProduct = (product) => {
-    setNewProduct({
-      id: product.id,
-      sku: product.sku || "",
-      name: product.name || "",
-      stock: product.stock || 0,
-      unit: product.unit || "",
-      status: product.status || "",
-      location: product.location || "",
-      image: null, // Gambar biasanya tidak diambil langsung
-      shelfLocation: product.shelfLocation || "",
-    });
-    setSelectedWarehouse(product.location || "");
-    setSelectedProduct(product);
+    fetchProductImageByID(product.id);
+    product.image = selectedImage
+    setNewProduct(product);
     setEditMode(true);
     setShowModal(true);
+    setSelectedWarehouse(product.location)
   };
 
   // Memperbarui produk yang diedit
@@ -266,41 +276,12 @@ const Produk = () => {
     }
 
     const formData = new FormData();
-
-    // Tambahkan validasi hanya untuk bagian yang berubah
-    if (
-      newProduct.sku !== selectedProduct.sku &&
-      newProduct.sku.trim() !== ""
-    ) {
-      formData.append("sku", newProduct.sku);
-    }
-    if (
-      newProduct.name !== selectedProduct.name &&
-      newProduct.name.trim() !== ""
-    ) {
-      formData.append("name", newProduct.name);
-    }
-    if (
-      newProduct.stock !== selectedProduct.stock &&
-      !isNaN(newProduct.stock)
-    ) {
-      formData.append("stock", newProduct.stock);
-    }
-    if (
-      newProduct.unit !== selectedProduct.unit &&
-      newProduct.unit.trim() !== ""
-    ) {
-      formData.append("unit", newProduct.unit);
-    }
-    if (
-      newProduct.status !== selectedProduct.status &&
-      newProduct.status.trim() !== ""
-    ) {
-      formData.append("status", newProduct.status);
-    }
-    if (selectedWarehouse && selectedWarehouse !== selectedProduct.location) {
-      formData.append("location", selectedWarehouse);
-    }
+    formData.append("sku", newProduct.sku);
+    formData.append("name", newProduct.name);
+    formData.append("stock", newProduct.stock);
+    formData.append("unit", newProduct.unit);
+    formData.append("status", newProduct.status);
+    formData.append("location", selectedWarehouse);
     if (newProduct.image) {
       formData.append("image", newProduct.image);
     }
@@ -311,12 +292,18 @@ const Produk = () => {
       formData.append("shelf_location", newProduct.shelfLocation);
     }
 
-    // Simpan data meskipun tidak ada perubahan
+    if (newProduct.shelf_location) {
+      formData.append("shelf_location", newProduct.shelf_location);
+  }
+
     try {
       await axios.put(
         `http://localhost:5000/api/products/${newProduct.id}`,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { 
+          "Content-Type": "multipart/form-data",
+          "Authorization": `Bearer ${token}`
+         } }
       );
       fetchProducts();
       setShowModal(false);
@@ -350,14 +337,19 @@ const Produk = () => {
   const handleDeleteClick = (id) => {
     setProductToDelete(id);
     setShowConfirmDeleteModal(true);
-    console.log("delete", showConfirmDeleteModal);
+    console.log("delete", showConfirmDeleteModal)
   };
 
   // Fungsi untuk mengonfirmasi hapus produk
   const confirmDeleteProduct = async () => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/products/${productToDelete}`
+        `http://localhost:5000/api/products/${productToDelete}`,
+        {
+          headers:{
+            "Authorization": `Bearer ${token}`,
+          }
+        }
       );
       fetchProducts();
       setShowConfirmDeleteModal(false);
@@ -380,11 +372,12 @@ const Produk = () => {
     }
   };
 
-  // Fungsi untuk close pop up konfirmasi delete
-  const closePopupDelete = async () => {
-    setShowConfirmDeleteModal(false);
-    setProductToDelete(null);
-  };
+    // Fungsi untuk close pop up konfirmasi delete
+    const closePopupDelete = async () => {
+        setShowConfirmDeleteModal(false);
+        setProductToDelete(null);
+      
+    };
 
   // Fungsi untuk mengunduh data dalam format CSV
   const downloadExcel = () => {
@@ -706,9 +699,9 @@ const Produk = () => {
             <div className="grid grid-cols-3 gap-4">
               {/* Kolom Kiri untuk Gambar */}
               <div className="col-span-1 flex items-center justify-center">
-                {selectedProduct.image ? (
+                {selectedImage ? (
                   <img
-                    src={selectedProduct.image} // Pastikan URL gambar valid
+                    src={URL.createObjectURL(selectedImage)} // Pastikan URL gambar valid
                     alt="Product"
                     className="h-40 w-40 object-cover rounded"
                   />
@@ -1008,11 +1001,11 @@ const Produk = () => {
                     type="text"
                     placeholder="Masukkan lokasi rak"
                     className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-300"
-                    value={newProduct.shelfLocation || ""}
+                    value={newProduct.shelf_location || ""}
                     onChange={(e) =>
                       setNewProduct({
                         ...newProduct,
-                        shelfLocation: e.target.value,
+                        shelf_location: e.target.value,
                       })
                     }
                   />
@@ -1021,7 +1014,7 @@ const Produk = () => {
                 {/* Tombol Aksi */}
                 <div className="flex justify-end space-x-4 mt-4">
                   <button
-                    onClick={() => setShowModal(false)}
+                    onClick={handleCancelAddProduct}
                     className="px-4 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400"
                   >
                     Batal
@@ -1060,6 +1053,37 @@ const Produk = () => {
               >
                 Hapus
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Detail modal */}
+      {/* Modal Detail Produk */}
+      {productToDelete && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: '#fff',
+            padding: '20px',
+            borderRadius: '5px',
+            width: '300px',
+            textAlign: 'center'
+          }}>
+            <h2>Are you sure you want to delete ?</h2>
+            <div>
+              <button onClick={closePopupDelete}  style={buttonStyles}>Cancel</button>
+              <button onClick={confirmDeleteProduct} style={{ ...buttonStyles, backgroundColor: 'red' }}>Confirm</button>
             </div>
           </div>
         </div>

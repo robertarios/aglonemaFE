@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from 'axios';
 
 const AddWarehouse = ({ onClose, onSave }) => {
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [formData, setFormData] = useState({
     id: "",
     name: "",
@@ -24,7 +25,11 @@ const AddWarehouse = ({ onClose, onSave }) => {
 
     try {
       // Sending the POST request to save data in the backend
-      const response = await axios.post('http://localhost:5000/api/gudang', newWarehouse);
+      const response = await axios.post('http://localhost:5000/api/gudang', newWarehouse, {
+        headers: { 
+          "Authorization": `Bearer ${token}`
+      },
+    });
 
       if (response.status === 201) {
         console.log("Warehouse added successfully");

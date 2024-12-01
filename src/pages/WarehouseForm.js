@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const WarehouseForm = ({ warehouse, onClose, onSave, onDelete }) => {
   const [formData, setFormData] = useState({ ...warehouse });
@@ -15,27 +15,30 @@ const WarehouseForm = ({ warehouse, onClose, onSave, onDelete }) => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      console.log('Saving data:', formData); // Log form data to check before sending
-      const response = await axios.put(`http://localhost:5000/api/gudang/${formData.id}`, formData);
-      console.log('Response:', response); // Log response to check if the request is successful
+      console.log("Saving data:", formData); // Log form data to check before sending
+      const response = await axios.put(
+        `http://localhost:5000/api/gudang/${formData.id}`,
+        formData
+      );
+      console.log("Response:", response); // Log response to check if the request is successful
 
       if (response.status === 200 || response.status === 204) {
-        console.log('Warehouse updated successfully');
-        onSave(formData);  // Update parent state with new data
-        onClose();  // Close the form
+        console.log("Warehouse updated successfully");
+        onSave(formData); // Update parent state with new data
+        onClose(); // Close the form
       }
     } catch (error) {
-      console.error('Error saving warehouse:', error);
+      console.error("Error saving warehouse:", error);
     }
   };
 
   const handleDelete = async () => {
     try {
       await axios.delete(`http://localhost:5000/api/gudang/${warehouse.id}`);
-      onDelete(warehouse.id);  // Update parent state to remove the warehouse
-      onClose();  // Close the form
+      onDelete(warehouse.id); // Update parent state to remove the warehouse
+      onClose(); // Close the form
     } catch (error) {
-      console.error('Error deleting warehouse:', error);
+      console.error("Error deleting warehouse:", error);
     }
   };
 

@@ -32,7 +32,7 @@ function App() {
         <Route path="/pusatdata" element={<PusatData />} />
         <Route path="/keluarmasuk" element={<InOut />} />
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/petunjuk-manajemen-gudang" element={<Panduan />} /> {/* Halaman Panduan Lengkap */}
+        <Route path="/petunjuk-manajemen-gudang" element={<Panduan />} />
       </Routes>
     </div>
   );

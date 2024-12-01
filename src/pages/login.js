@@ -61,10 +61,17 @@ const Login = () => {
         }
       );
 
-      const { userId, message } = response.data; // Ambil userId dari respons
-      localStorage.setItem("userId", userId); // Simpan userId ke localStorage
+      // Store the token in localStorage (or sessionStorage)
+      localStorage.setItem('token', response.data.token);
+      
+      // Store the role in localStorage (or sessionStorage)
+      localStorage.setItem('role', response.data.role);
 
-      setSuccessMessage(message); // Simpan pesan sukses
+      // Store userID in localStorage
+      localStorage.setItem("userId", response.data.userId);
+
+      // Jika login berhasil
+      setSuccessMessage(response.data.message); // Simpan pesan sukses
       setShowModal(true); // Tampilkan modal
       setTimeout(() => {
         setShowModal(false); // Tutup modal setelah 3 detik
