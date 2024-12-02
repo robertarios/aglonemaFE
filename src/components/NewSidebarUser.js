@@ -68,8 +68,8 @@ function NewsidebarUser() {
         <SidebarItem
           icon={faFileAlt}
           label="Laporan"
-          path="/laporan"
-          isActive={isActive("/laporan")}
+          path="/laporanuser"
+          isActive={isActive("/laporanuser")}
         />
         
       </div>

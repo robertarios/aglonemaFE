@@ -9,6 +9,7 @@ import SignUp from './pages/SignUp';
 import ProdukPage from './pages/ProdukPage';
 import LokasiPage from './pages/LokasiPage';
 import LaporanPage from './pages/LaporanPage';
+import LaporanUserPage from './pages/LaporanUserPage';
 import Warehouse from './pages/Gudang';
 import Kedaluarsa from './pages/PengaturanKedaluarsa';
 import PusatData from './pages/PusatData';
@@ -27,6 +28,7 @@ function App() {
         <Route path="/produk" element={<ProdukPage />} />
         <Route path="/lokasi" element={<LokasiPage />} />
         <Route path="/laporan" element={<LaporanPage />} />
+        <Route path="/laporanuser" element={<LaporanUserPage />} />
         <Route path="/gudang" element={<Warehouse />} />
         <Route path="/kedaluarsa" element={<Kedaluarsa />} />
         <Route path="/pusatdata" element={<PusatData />} />
