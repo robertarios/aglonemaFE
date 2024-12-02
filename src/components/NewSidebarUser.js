@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTachometerAlt,
-  faBox,
-  faDatabase,
-  faWarehouse,
   faFileAlt,
-  faCogs,
-  faChevronDown,
+  faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 // Impor gambar logo
@@ -19,6 +15,7 @@ function NewsidebarUser() {
   const [role, setRole] = useState(localStorage.getItem('role') || '');
   const [showLogoutModal, setShowLogoutModal] = useState(false);  
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -41,6 +38,16 @@ function NewsidebarUser() {
 
   const isActive = (path) => location.pathname.startsWith(path);
 
+  const handleLogout = () => {
+    setShowLogoutModal(false);
+    localStorage.removeItem('userId');
+    navigate('/login');
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
+  };
+
   return (
     <div className="w-64 h-screen bg-[#EDF3FF] shadow flex-col justify-start items-start">
       {/* Logo */}
@@ -50,14 +57,14 @@ function NewsidebarUser() {
 
       {/* Sidebar Menu */}
       <div className="h-screen bg-[#EDF3FF]">
-      <div className="pt-6 pb-8 flex flex-col justify-start items-start pl-5 pr-4 py-[13.51px] bg-[#DAE6FF]">
-        <div className="text-sm font-normal leading-[21px]">
-          {username}
+        <div className="pt-6 pb-8 flex flex-col justify-start items-start pl-5 pr-4 py-[13.51px] bg-[#DAE6FF]">
+          <div className="text-sm font-normal leading-[21px]">
+            {username}
+          </div>
+          <div className="text-sm font-normal text-[#2f6d64] leading-[21px]">
+            {role}
+          </div>
         </div>
-        <div className="text-sm font-normal text-[#2f6d64] leading-[21px]">
-          {role}
-        </div>
-      </div>
 
         <SidebarItem
           icon={faTachometerAlt}
@@ -68,11 +75,51 @@ function NewsidebarUser() {
         <SidebarItem
           icon={faFileAlt}
           label="Laporan"
-          path="/laporanuser"
-          isActive={isActive("/laporanuser")}
+          path="/laporan"
+          isActive={isActive("/laporan")}
         />
         
+        {/* Tombol Logout */}
+        <div className="absolute bottom-4 w-full">
+          <div
+            className="h-[58.02px] py-[5px] flex justify-start items-center pl-5 pr-4 py-[13.51px] cursor-pointer"
+            onClick={() => setShowLogoutModal(true)} 
+          >
+            <div className="w-10 flex justify-start items-center">
+              <FontAwesomeIcon
+                icon={faSignOutAlt}
+                className="text-sm text-[#2f6d64]"
+              />
+            </div>
+            <div className="text-sm font-normal text-[#2f6d64]">
+              Logout
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Modal Konfirmasi Logout */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-72">
+            <div className="text-lg font-semibold mb-4">Apakah Anda yakin ingin keluar?</div>
+            <div className="flex justify-center">
+              <button
+                className="bg-[#457468] text-white px-4 py-2 rounded-lg mr-2"
+                onClick={handleLogout}
+              >
+                Yes
+              </button>
+              <button
+                className="bg-[#e1e1e1] text-[#2f6d64] px-4 py-2 rounded-lg"
+                onClick={cancelLogout}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
