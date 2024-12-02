@@ -6,6 +6,7 @@ import axios from "axios";
 const Dashboard = () => {
   const [products, setProducts] = useState([]); 
   const [totalStock, setTotalStock] = useState(0);
+  const [popularProducts, setPopularProducts] = useState([]);
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [role, setRole] = useState(localStorage.getItem('role') || '');
 
@@ -18,8 +19,19 @@ const Dashboard = () => {
     }
   };
 
+  // Fetch popular products based on stock history
+  const fetchPopularProducts = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/products/popular-products");
+      setPopularProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching popular products:", error);
+    }
+  };
+
   useEffect((role) => {
     fetchProducts();
+    fetchPopularProducts();
   }, []);
 
   useEffect(() => {
@@ -82,15 +94,24 @@ const Dashboard = () => {
                 <thead>
                   <tr>
                     <th className="py-2">Nama Barang</th>
+                    <th className="py-2">Total Aktivitas</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="py-8 text-center">
-                      {/* <FaChartBar className="text-5xl text-blue-500 mb-2" /> */}
-                      <p className="text-gray-500 text-sm">Belum ada data</p>
-                    </td>
-                  </tr>
+                  {popularProducts.length > 0 ? (
+                    popularProducts.map((product) => (
+                      <tr key={product.product_id}>
+                        <td className="py-2">{product.name}</td>
+                        <td className="py-2">{product.total_activity}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td className="py-8 text-center" colSpan="2">
+                        <p className="text-gray-500 text-sm">Belum ada data</p>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

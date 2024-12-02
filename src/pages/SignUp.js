@@ -128,8 +128,8 @@ const SignUp = () => {
               to="/login"
               className={({ isActive }) =>
                 isActive
-                  ? "text-[40px] font-semibold text-green-700 leading-[36px] relative"
-                  : "text-[40px] font-semibold text-gray-400 leading-[36px]"
+                  ? "text-[30px] font-semibold text-green-700 leading-[36px] relative"
+                  : "text-[30px] font-semibold text-gray-400 leading-[36px]"
               }
             >
               Login
@@ -138,8 +138,8 @@ const SignUp = () => {
               to="/signup"
               className={({ isActive }) =>
                 isActive
-                  ? "text-[40px] font-bold text-green-700 leading-[36px] relative"
-                  : "text-[40px] font-semibold text-gray-400 leading-[36px]"
+                  ? "text-[30px] font-bold text-green-700 leading-[36px] relative"
+                  : "text-[30px] font-semibold text-gray-400 leading-[36px]"
               }
             >
               Sign up
@@ -156,7 +156,7 @@ const SignUp = () => {
             {/* Full Name Input */}
             <div className="relative flex flex-row items-center">
               <div className="flex flex-col w-full">
-                <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
+                <div className="flex items-center bg-white shadow-md rounded-full h-[50px] px-4 border border-gray-200">
                   <FaUser className="text-[#457468] text-lg mr-4" />
                   <input
                     type="text"
@@ -179,7 +179,7 @@ const SignUp = () => {
             {/* Email Input */}
             <div className="relative flex flex-row items-center">
               <div className="flex flex-col w-full">
-                <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
+                <div className="flex items-center bg-white shadow-md rounded-full h-[50px] px-4 border border-gray-200">
                   <FaEnvelope className="text-[#457468] text-lg mr-4" />
                   <input
                     type="email"
@@ -202,7 +202,7 @@ const SignUp = () => {
             {/* Phone Number Input */}
             <div className="relative flex flex-row items-center">
               <div className="flex flex-col w-full">
-                <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
+                <div className="flex items-center bg-white shadow-md rounded-full h-[50px] px-4 border border-gray-200">
                   <FaPhone className="text-[#457468] text-lg mr-4" />
                   <input
                     type="tel"
@@ -225,7 +225,7 @@ const SignUp = () => {
             {/* Role Input */}
             <div className="relative flex flex-row items-center">
               <div className="flex flex-col w-full">
-                <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
+                <div className="flex items-center bg-white shadow-md rounded-full h-[50px] px-4 border border-gray-200">
                 <FaUser className="text-[#457468] text-lg mr-4" />
                   <label htmlFor="dropdown">Select Role:</label>
                     <select id="dropdown" value={formData.role} onChange={handleRoleChange}>
@@ -239,7 +239,7 @@ const SignUp = () => {
             {/* Password Input */}
             <div className="relative flex flex-row items-center">
               <div className="flex flex-col w-full">
-                <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
+                <div className="flex items-center bg-white shadow-md rounded-full h-[50px] px-4 border border-gray-200">
                   <FaLock className="text-[#457468] text-lg mr-4" />
                   <input
                     type="password"
@@ -262,7 +262,7 @@ const SignUp = () => {
             {/* Confirm Password Input */}
             <div className="relative flex flex-row items-center">
               <div className="flex flex-col w-full">
-                <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
+                <div className="flex items-center bg-white shadow-md rounded-full h-[50px] px-4 border border-gray-200">
                   <FaLock className="text-[#457468] text-lg mr-4" />
                   <input
                     type="password"
@@ -305,7 +305,7 @@ const SignUp = () => {
             {/* Create Account Button */}
             <button
               type="submit"
-              className="w-full h-[62px] text-[20px] text-white bg-green-700 rounded-full hover:bg-green-800"
+              className="w-full h-[50px] text-[20px] text-white bg-green-700 rounded-full hover:bg-green-800"
             >
               Create Account
             </button>

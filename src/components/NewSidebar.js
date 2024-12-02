@@ -81,12 +81,19 @@ function Newsidebar() {
         <DropdownMenu
           icon={faBox}
           label="Produk"
-          isActive={isActive("/produk")}
+          isActive={isActive("/produk") || isActive("/keluarmasuk")} // DropdownMenu aktif jika salah satu path aktif
           items={[
-            { label: "Daftar Produk", path: "/produk" },
-            { label: "Stock Management", path: "/keluarmasuk" },
+            { 
+              label: "Daftar Produk", 
+              path: "/produk"
+            },
+            { 
+              label: "Stock Management", 
+              path: "/keluarmasuk"
+            },
           ]}
         />
+
         <DropdownMenu
           icon={faDatabase}
           label="Pusat Data"

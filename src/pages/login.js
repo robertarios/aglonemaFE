@@ -102,21 +102,21 @@ const Login = () => {
         {/* Left Side - Form Section */}
         <div className="flex-1 px-8 py-16 flex flex-col justify-center ml-[132.65px] mt-[132.65px] max-w-[450px] space-y-6">
           <div className="flex justify-center items-center mb-8 text-gray-500 pb-10 space-x-10">
-            <h2 className="text-[40px] font-bold text-green-700 cursor-pointer leading-[36px] relative">
+            <h4 className="text-[30px] font-bold text-green-700 cursor-pointer leading-[36px] relative">
               Login
               <span className="block h-[4px] w-[140px] bg-green-700 rounded-full mt-1 mx-auto"></span>
-            </h2>
+            </h4>
             <NavLink to="/signup">
-              <h2 className="text-[40px] font-semibold text-gray-400 cursor-pointer leading-[36px]">
+              <h4 className="text-[30px] font-semibold text-gray-400 cursor-pointer leading-[36px]">
                 Sign up
-              </h2>
+              </h4>
             </NavLink>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email Input */}
             <div className="relative flex flex-col">
-              <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
+              <div className="flex items-center bg-white shadow-md rounded-full h-[50px] px-4 border border-gray-200">
                 <FaEnvelope className="text-[#457468] text-lg mr-4" />
                 <input
                   type="email"
@@ -137,7 +137,7 @@ const Login = () => {
 
             {/* Password Input */}
             <div className="relative flex flex-col">
-              <div className="flex items-center bg-white shadow-md rounded-full h-[62px] px-4 border border-gray-200">
+              <div className="flex items-center bg-white shadow-md rounded-full h-[50px] px-4 border border-gray-200">
                 <FaLock className="text-[#457468] text-lg mr-4" />
                 <input
                   type="password"
@@ -164,7 +164,7 @@ const Login = () => {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full h-[62px] text-[20px] text-white bg-green-700 rounded-full hover:bg-green-800"
+              className="w-full h-[50px] text-[20px] text-white bg-green-700 rounded-full hover:bg-green-800"
             >
               Login
             </button>

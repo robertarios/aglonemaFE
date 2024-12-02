@@ -91,7 +91,7 @@ const Landing = () => {
         </section>
 
         {/* Statistics Section */}
-        <section className="relative bg-white py-32 px-8 -mt-24">
+        {/* <section className="relative bg-white py-32 px-8 -mt-24">
           <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">
             <div className="bg-white shadow-lg rounded-lg p-6 pb-18 text-center">
               <div className="text-[#62AA99] text-5xl mt-6 mb-2">170+</div>
@@ -110,10 +110,10 @@ const Landing = () => {
               </p>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* New Automation Service Section */}
-        <section className="bg-white py-8 px-8">
+        <section className="bg-white py-32 px-8">
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="text-3xl font-semibold">
               Solusi Layanan Yang Siap Otomasi Produkmu
@@ -147,7 +147,7 @@ const Landing = () => {
         </section>
 
         {/* Why Choose Aglostok Section */}
-        <section className="bg-white py-8 px-8 mt-24 pb-20">
+        <section className="bg-white px-8 pb-20">
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="text-3xl font-semibold">
               Kenapa Harus Dengan Aglostok?
