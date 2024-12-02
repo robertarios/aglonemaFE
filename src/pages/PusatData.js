@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; // Import Axios for API requests
+import axios from "axios";
 import Newsidebar from "../components/NewSidebar";
 import Navbar from "../components/Navbar";
-import { FaSearch, FaCog, FaPlus, FaRegSadTear } from "react-icons/fa";
+import { FaSearch, FaCog, FaPlus } from "react-icons/fa";
 import DataEditModal from "../components/DataEditModal";
 import AddUserModal from "../components/AddUserModal";
 
@@ -13,41 +13,48 @@ const PusatData = () => {
   const [selectedData, setSelectedData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [totalRecords, setTotalRecords] = useState(0);
 
-  const [users, setUsers] = useState([]); // State to store user data
-
-  // Fetch user data from the backend
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/pusatdata")
-      .then((response) => setUsers(response.data))
+      .then((response) => {
+        console.log(response.data);
+        setUsers(response.data.data);
+        setTotalRecords(response.data.totalRecords);
+      })
       .catch((error) => console.error("Error fetching data:", error));
+      
   }, []);
 
-  // Filter users based on search
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredUsers = Array.isArray(users)
+    ? users.filter((user) =>
+        user.name.toLowerCase().includes(search.toLowerCase())
+      )
+    : [];
 
-  // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
 
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(filteredUsers.length / itemsPerPage); i++) {
-    pageNumbers.push(i);
-  }
+  const totalPages = Math.ceil(totalRecords / itemsPerPage);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  // Array nomor halaman
+  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
 
-  // Handle opening the modal to edit data
+  // Fungsi navigasi halaman
+  const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
   const handleEditClick = (user) => {
     setSelectedData(user);
     setIsModalOpen(true);
   };
 
-  // Handle closing the modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedData(null);
@@ -55,30 +62,19 @@ const PusatData = () => {
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
-  
-  const handleUserUpdated = (updatedUser) => {
-    if (updatedUser) {
-      // Update the user data in the state
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === updatedUser.id ? updatedUser : user
-        )
-      );
-    }
-  };
 
-  // Handle saving the edited user data
   const handleSave = (updatedData) => {
     axios
       .put(`http://localhost:5000/api/pusatdata/${updatedData.id}`, updatedData)
       .then((response) => {
-        // Memperbarui state users setelah data berhasil diperbarui
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
             user.id === updatedData.id ? response.data : user
           )
         );
-        handleCloseModal(); // Menutup modal setelah update
+        handleCloseModal();
+        // Refetch data setelah update
+        refetchData();
       })
       .catch((error) => {
         console.error("Error updating data:", error);
@@ -86,15 +82,14 @@ const PusatData = () => {
       });
   };
   
-
-  // Handle deleting the user data
   const handleDelete = (id) => {
     axios
       .delete(`http://localhost:5000/api/pusatdata/${id}`)
       .then(() => {
-        // Update state users setelah penghapusan
         setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-        handleCloseModal(); // Menutup modal
+        handleCloseModal();
+        // Refetch data setelah delete
+        refetchData();
       })
       .catch((error) => {
         console.error("Error deleting data:", error);
@@ -102,21 +97,26 @@ const PusatData = () => {
       });
   };
   
-
+  // Fungsi refetch data
+  const refetchData = () => {
+    axios
+      .get("http://localhost:5000/api/pusatdata")
+      .then((response) => {
+        setUsers(response.data.data);
+        setTotalRecords(response.data.totalRecords);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  };
+  
   const addUser = async (newUser) => {
     try {
-      const response = await fetch("http://localhost:5000/api/pusatdata", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUser),
-      });
-  
-      if (response.ok) {
-        const result = await response.json();
-        // Menambahkan pengguna baru ke dalam state users
-        setUsers((prevUsers) => [...prevUsers, result]);
+      const response = await axios.post("http://localhost:5000/api/pusatdata", newUser);
+      
+      if (response.status === 201) { // Pastikan data berhasil ditambahkan
+        const addedUser = response.data;
+        console.log(response.data);
+        setUsers((prevUsers) => [...prevUsers, addedUser]); // Tambahkan ke state
+        closeModal(); // Tutup modal setelah berhasil
       } else {
         console.error("Failed to add user");
       }
@@ -125,7 +125,6 @@ const PusatData = () => {
     }
   };
   
-
   return (
     <div className="flex bg-[#FAFAFA]">
       <Newsidebar />
@@ -163,7 +162,8 @@ const PusatData = () => {
                   </th>
                   <th className="py-4 px-6 text-gray-500">
                     <div className="flex justify-end">
-                      <button className="bg-[#467469] text-white p-3 rounded-full flex items-center"
+                      <button
+                        className="bg-[#467469] text-white p-3 rounded-full flex items-center"
                         onClick={openModal}
                       >
                         <FaPlus className="mr-2" /> Tambah Pengguna
@@ -195,61 +195,82 @@ const PusatData = () => {
               </thead>
 
               <tbody>
-                {currentUsers.length === 0 ? (
-                  <tr>
-                    <td colSpan="6" className="py-4 text-center px-6">
-                      <div className="flex flex-col items-center justify-center">
-                        <FaRegSadTear className="text-gray-400 text-4xl mb-4" />
-                        <span className="text-gray-500">
-                          Tambah data pengguna anda
-                        </span>
-                      </div>
+                {currentUsers.map((user) => (
+                  <tr key={user.id} className="border-b">
+                    <td className="py-4 text-left px-6">{user.id}</td>
+                    <td className="py-4 text-left px-6">{user.name}</td>
+                    <td className="py-4 text-left px-6">{user.email}</td>
+                    <td className="py-4 text-left px-6">{user.access_level}</td>
+                    <td className="py-4 text-left px-6">{user.data_center}</td>
+                    <td className="py-4 text-center pr-8 px-6">
+                      <button
+                        onClick={() => handleEditClick(user)}
+                        className="bg-gray-300 text-black p-2 rounded ml-3"
+                      >
+                        <FaCog />
+                      </button>
                     </td>
                   </tr>
-                ) : (
-                  currentUsers.map((user) => (
-                    <tr key={user.id} className="border-b">
-                      <td className="py-4 text-left px-6">{user.id}</td>
-                      <td className="py-4 text-left px-6">{user.name}</td>
-                      <td className="py-4 text-left px-6">{user.email}</td>
-                      <td className="py-4 text-left px-6">
-                        {user.access_level}
-                      </td>
-                      <td className="py-4 text-left px-6">
-                        {user.data_center}
-                      </td>
-                      <td className="py-4 text-center pr-8 px-6">
-                        <button
-                          onClick={() => handleEditClick(user)}
-                          className="bg-gray-300 text-black p-2 rounded ml-3"
-                        >
-                          <FaCog />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
+
+            {/* Pagination Controls */}
+            <div className="flex justify-end mt-4">
+              <ul className="flex space-x-2 items-center">
+                <li>
+                  <button
+                    onClick={() => paginate(currentPage - 1)}
+                    className="px-4 py-2 border rounded bg-white text-[#467469]"
+                    disabled={currentPage === 1}
+                  >
+                    «
+                  </button>
+                </li>
+                {pageNumbers.map((number) => (
+                  <li key={number}>
+                    <button
+                      onClick={() => paginate(number)}
+                      className={`px-4 py-2 border rounded ${
+                        number === currentPage
+                          ? "bg-[#467469] text-white"
+                          : "bg-white text-[#467469]"
+                      }`}
+                    >
+                      {number}
+                    </button>
+                  </li>
+                ))}
+                <li>
+                  <button
+                    onClick={() => paginate(currentPage + 1)}
+                    className="px-4 py-2 border rounded bg-white text-[#467469]"
+                    disabled={currentPage === pageNumbers.length}
+                  >
+                    »
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
+
+
+        <DataEditModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onSave={handleSave}
+          onDelete={handleDelete}
+          data={selectedData}
+          onUserUpdated={handleSave}
+        />
+
+        <AddUserModal
+          isOpen={modalOpen}
+          closeModal={closeModal}
+          addUser={addUser}
+        />
       </div>
-
-      {/* Modal */}
-      <DataEditModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSave={handleSave}
-        onDelete={handleDelete}
-        data={selectedData}
-        onUserUpdated={handleUserUpdated}
-      />
-
-      <AddUserModal
-        isOpen={modalOpen}
-        closeModal={closeModal}
-        addUser={addUser}
-      />
     </div>
   );
 };

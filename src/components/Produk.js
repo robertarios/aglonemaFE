@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRef } from "react";
-import unitData from '../assets/units.json';  // Path yang benar dari components ke assets
+import unitData from "../assets/units.json"; // Path yang benar dari components ke assets
 import {
   FaCog,
   FaEye,
@@ -25,8 +25,8 @@ const Produk = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [errors, setErrors] = useState({});
   const [warehouses, setWarehouses] = useState([]);
-  const [token, setToken] = useState(localStorage.getItem('token') || '');
-  const [role, setRole] = useState(localStorage.getItem('role') || '');
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [role, setRole] = useState(localStorage.getItem("role") || "");
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -51,14 +51,16 @@ const Produk = () => {
 
   const fetchTotalStock = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/products/total-stock");
+      const response = await axios.get(
+        "http://localhost:5000/api/products/total-stock"
+      );
       setTotalStock(response.data.totalStock); // Simpan total stok ke state
       setShowTotalStockModal(true); // Tampilkan modal setelah data diambil
     } catch (error) {
       console.error("Error fetching total stock:", error);
     }
   };
-  
+
   const handleViewDetails = (product) => {
     fetchProductImageByID(product.id);
     setSelectedProduct(product);
@@ -161,9 +163,11 @@ const Produk = () => {
   // Fungsi untuk mengambil data gambar produk dari backend by id
   const fetchProductImageByID = async (productID) => {
     try {
-      const response = await fetch (`http://localhost:5000/api/products/image/${productID}`);
+      const response = await fetch(
+        `http://localhost:5000/api/products/image/${productID}`
+      );
       const imageBlob = await response.blob();
-      setSelectedImage(imageBlob)
+      setSelectedImage(imageBlob);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -221,20 +225,28 @@ const Produk = () => {
     }
     if (newProduct.shelf_location) {
       formData.append("shelf_location", newProduct.shelf_location);
-  }
+    }
 
     try {
-        await axios.post("http://localhost:5000/api/products", formData, {
-            headers: { 
-              "Content-Type": "multipart/form-data",
-              "Authorization": `Bearer ${token}`
-          },
-        });
-        fetchProducts();
-        setShowModal(false);
-        setNewProduct({ id: "", sku: "", name: "", stock: 0, status: "", location: "", image: null });
-        setSelectedWarehouse(""); // Reset dropdown
-        // Tampilkan notifikasi sukses
+      await axios.post("http://localhost:5000/api/products", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      fetchProducts();
+      setShowModal(false);
+      setNewProduct({
+        id: "",
+        sku: "",
+        name: "",
+        stock: 0,
+        status: "",
+        location: "",
+        image: null,
+      });
+      setSelectedWarehouse(""); // Reset dropdown
+      // Tampilkan notifikasi sukses
       setNotificationMessage("Produk berhasil ditambahkan.");
       setShowNotification(true);
       setTimeout(() => {
@@ -243,25 +255,31 @@ const Produk = () => {
     } catch (error) {
       console.error("Error adding product:", error);
     }
-};
+  };
 
   // handle batal tambah produk
   const handleCancelAddProduct = () => {
     setShowModal(false);
-    setNewProduct({ id: "", sku: "", name: "", stock: 0, status: "", location: "", image: null });
+    setNewProduct({
+      id: "",
+      sku: "",
+      name: "",
+      stock: 0,
+      status: "",
+      location: "",
+      image: null,
+    });
     setSelectedWarehouse(""); // Reset dropdown
-  }
-
-
+  };
 
   // Mengatur produk untuk diedit
   const handleEditProduct = (product) => {
     fetchProductImageByID(product.id);
-    product.image = selectedImage
+    product.image = selectedImage;
     setNewProduct(product);
     setEditMode(true);
     setShowModal(true);
-    setSelectedWarehouse(product.location)
+    setSelectedWarehouse(product.location);
   };
 
   // Memperbarui produk yang diedit
@@ -294,16 +312,18 @@ const Produk = () => {
 
     if (newProduct.shelf_location) {
       formData.append("shelf_location", newProduct.shelf_location);
-  }
+    }
 
     try {
       await axios.put(
         `http://localhost:5000/api/products/${newProduct.id}`,
         formData,
-        { headers: { 
-          "Content-Type": "multipart/form-data",
-          "Authorization": `Bearer ${token}`
-         } }
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       fetchProducts();
       setShowModal(false);
@@ -337,7 +357,7 @@ const Produk = () => {
   const handleDeleteClick = (id) => {
     setProductToDelete(id);
     setShowConfirmDeleteModal(true);
-    console.log("delete", showConfirmDeleteModal)
+    console.log("delete", showConfirmDeleteModal);
   };
 
   // Fungsi untuk mengonfirmasi hapus produk
@@ -346,9 +366,9 @@ const Produk = () => {
       await axios.delete(
         `http://localhost:5000/api/products/${productToDelete}`,
         {
-          headers:{
-            "Authorization": `Bearer ${token}`,
-          }
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       fetchProducts();
@@ -372,12 +392,11 @@ const Produk = () => {
     }
   };
 
-    // Fungsi untuk close pop up konfirmasi delete
-    const closePopupDelete = async () => {
-        setShowConfirmDeleteModal(false);
-        setProductToDelete(null);
-      
-    };
+  // Fungsi untuk close pop up konfirmasi delete
+  const closePopupDelete = async () => {
+    setShowConfirmDeleteModal(false);
+    setProductToDelete(null);
+  };
 
   // Fungsi untuk mengunduh data dalam format CSV
   const downloadExcel = () => {
@@ -406,21 +425,25 @@ const Produk = () => {
   return (
     <div className="p-6">
       {showTotalStockModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div className="bg-white p-6 rounded shadow-lg w-80">
-      <h2 className="text-xl font-semibold text-center mb-4">Total Seluruh Asset</h2>
-      <p className="text-center text-lg">Jumlah Stok: <strong>{totalStock}</strong></p>
-      <div className="flex justify-center mt-4">
-        <button
-          onClick={() => setShowTotalStockModal(false)}
-          className="px-4 py-2 bg-green-700 text-white rounded-full hover:bg-green-800"
-        >
-          Tutup
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded shadow-lg w-80">
+            <h2 className="text-xl font-semibold text-center mb-4">
+              Total Seluruh Asset
+            </h2>
+            <p className="text-center text-lg">
+              Jumlah Stok: <strong>{totalStock}</strong>
+            </p>
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={() => setShowTotalStockModal(false)}
+                className="px-4 py-2 bg-green-700 text-white rounded-full hover:bg-green-800"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Notifikasi */}
       {showNotification && (
@@ -443,12 +466,12 @@ const Produk = () => {
           </h1>
         </div>
         <div className="flex items-center space-x-4 text-gray-500">
-        <button
-          className="flex items-center text-green-700 space-x-1"
-          onClick={fetchTotalStock} // Memanggil fungsi fetchTotalStock
-        >
-          <FaList className="mr-1" /> <span>Total Seluruh Asset</span>
-        </button>
+          <button
+            className="flex items-center text-green-700 space-x-1"
+            onClick={fetchTotalStock} // Memanggil fungsi fetchTotalStock
+          >
+            <FaList className="mr-1" /> <span>Total Seluruh Asset</span>
+          </button>
         </div>
       </div>
 
@@ -485,11 +508,11 @@ const Produk = () => {
           />
         </div>
         <button
-            onClick={downloadExcel}
-            className="bg-[#467469] text-white px-4 py-2 rounded-full flex items-center space-x-1 hover:bg-[#365951]"
-          >
-            <FaFileExcel className="mr-1" /> <span>Data Excel</span>
-          </button>
+          onClick={downloadExcel}
+          className="bg-[#467469] text-white px-4 py-2 rounded-full flex items-center space-x-1 hover:bg-[#365951]"
+        >
+          <FaFileExcel className="mr-1" /> <span>Data Excel</span>
+        </button>
       </div>
 
       {/* Product Table */}
@@ -500,17 +523,15 @@ const Produk = () => {
             {/* <button className="flex items-center text-gray-500">
               <FaHistory className="mr-1" /> Histori Data
             </button> */}
-           <button
-                onClick={() => {
-                  setShowModal(true);
-                  setEditMode(false);
-                }}
-                className="bg-[#467469] text-white px-4 py-2 rounded-full hover:bg-[#365951] flex items-center"
-              >
-                <FaPlus /> <span>Produk</span>
-              </button>
-
-
+            <button
+              onClick={() => {
+                setShowModal(true);
+                setEditMode(false);
+              }}
+              className="bg-[#467469] text-white px-4 py-2 rounded-full hover:bg-[#365951] flex items-center"
+            >
+              <FaPlus /> <span>Produk</span>
+            </button>
           </div>
         </div>
 
@@ -532,8 +553,10 @@ const Produk = () => {
             </thead>
             <tbody>
               {getPaginatedData().map((product) => (
-                <tr key={product.id} className="border-b border-gray-300 hover:bg-gray-50">
-
+                <tr
+                  key={product.id}
+                  className="border-b border-gray-300 hover:bg-gray-50"
+                >
                   <td className="py-3 px-4 text-left">{product.sku}</td>
                   <td className="py-3 px-4 text-left">{product.name}</td>
                   <td className="py-3 px-4 text-left">{product.stock}</td>
@@ -542,148 +565,154 @@ const Produk = () => {
                     {product.warehouse_name}
                   </td>
                   <td className="py-3 px-4 text-left relative">
-  {/* Ikon utama (cog) untuk memunculkan menu aksi */}
-  <button
-    onClick={() => toggleActionMenu(product.id)}
-    className="text-gray-600 hover:text-gray-800"
-  >
-    <FaCog />
-  </button>
+                    {/* Ikon utama (cog) untuk memunculkan menu aksi */}
+                    <button
+                      onClick={() => toggleActionMenu(product.id)}
+                      className="text-gray-600 hover:text-gray-800"
+                    >
+                      <FaCog />
+                    </button>
 
-  {/* Menu dropdown yang muncul saat cog di klik */}
-  {actionRow === product.id && (
-    <div
-      className="absolute bg-white border rounded shadow-lg z-10 flex flex-col items-center space-y-2"
-      style={{
-        top: "0", // Sejajar dengan ikon cog
-        left: "40px", // Tepat di sebelah kanan ikon cog
-        width: "50px", // Lebar kotak dropdown
-        padding: "8px 4px", // Padding dalam kotak
-      }}
-    >
-      {/* Ikon Lihat Detail */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          handleViewDetails(product); // Panggil modal detail
-        }}
-        className="hover:text-green-600"
-      >
-        <FaEye className="text-green-500 hover:text-green-700" size={20} />
-      </button>
+                    {/* Menu dropdown yang muncul saat cog di klik */}
+                    {actionRow === product.id && (
+                      <div
+                        className="absolute bg-white border rounded shadow-lg z-10 flex flex-col items-center space-y-2"
+                        style={{
+                          top: "0", // Sejajar dengan ikon cog
+                          left: "40px", // Tepat di sebelah kanan ikon cog
+                          width: "50px", // Lebar kotak dropdown
+                          padding: "8px 4px", // Padding dalam kotak
+                        }}
+                      >
+                        {/* Ikon Lihat Detail */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewDetails(product); // Panggil modal detail
+                          }}
+                          className="hover:text-green-600"
+                        >
+                          <FaEye
+                            className="text-green-500 hover:text-green-700"
+                            size={20}
+                          />
+                        </button>
 
-      {/* Ikon Edit */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          handleEditProduct(product); // Panggil modal edit
-        }}
-        className="hover:text-blue-700"
-      >
-        <FaEdit className="text-blue-500 hover:text-blue-700" size={20} />
-      </button>
+                        {/* Ikon Edit */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditProduct(product); // Panggil modal edit
+                          }}
+                          className="hover:text-blue-700"
+                        >
+                          <FaEdit
+                            className="text-blue-500 hover:text-blue-700"
+                            size={20}
+                          />
+                        </button>
 
-      {/* Ikon Hapus */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          handleDeleteClick(product.id); // Panggil modal hapus
-        }}
-        className="hover:text-red-700"
-      >
-        <FaTrash className="text-red-500 hover:text-red-700" size={20} />
-      </button>
-    </div>
-  )}
-</td>
-
-
+                        {/* Ikon Hapus */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(product.id); // Panggil modal hapus
+                          }}
+                          className="hover:text-red-700"
+                        >
+                          <FaTrash
+                            className="text-red-500 hover:text-red-700"
+                            size={20}
+                          />
+                        </button>
+                      </div>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
           {/* Pagination */}
           <div className="flex justify-end mt-4 pr-4 mb-6">
-          <nav>
-            <ul className="flex items-center space-x-1">
-              {/* First Page */}
-              <li>
-                <button
-                  onClick={() => setCurrentPage(1)}
-                  disabled={currentPage === 1}
-                  className={`h-8 w-8 flex items-center justify-center rounded ${
-                    currentPage === 1
-                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-                  }`}
-                >
-                  «
-                </button>
-              </li>
-
-              {/* Previous Page */}
-              <li>
-                <button
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className={`h-8 w-8 flex items-center justify-center rounded ${
-                    currentPage === 1
-                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-                  }`}
-                >
-                  ‹
-                </button>
-              </li>
-
-              {/* Page Numbers */}
-              {Array.from({ length: getTotalPages() }, (_, index) => (
-                <li key={index}>
+            <nav>
+              <ul className="flex items-center space-x-1">
+                {/* First Page */}
+                <li>
                   <button
-                    onClick={() => handlePageClick(index + 1)}
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
                     className={`h-8 w-8 flex items-center justify-center rounded ${
-                      currentPage === index + 1
-                        ? "bg-green-700 text-white"
+                      currentPage === 1
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                         : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
                     }`}
                   >
-                    {index + 1}
+                    «
                   </button>
                 </li>
-              ))}
 
-              {/* Next Page */}
-              <li>
-                <button
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === getTotalPages()}
-                  className={`h-8 w-8 flex items-center justify-center rounded ${
-                    currentPage === getTotalPages()
-                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-                  }`}
-                >
-                  ›
-                </button>
-              </li>
+                {/* Previous Page */}
+                <li>
+                  <button
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`h-8 w-8 flex items-center justify-center rounded ${
+                      currentPage === 1
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                    }`}
+                  >
+                    ‹
+                  </button>
+                </li>
 
-              {/* Last Page */}
-              <li>
-                <button
-                  onClick={() => setCurrentPage(getTotalPages())}
-                  disabled={currentPage === getTotalPages()}
-                  className={`h-8 w-8 flex items-center justify-center rounded ${
-                    currentPage === getTotalPages()
-                      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-                  }`}
-                >
-                  »
-                </button>
-              </li>
-            </ul>
-          </nav>
+                {/* Page Numbers */}
+                {Array.from({ length: getTotalPages() }, (_, index) => (
+                  <li key={index}>
+                    <button
+                      onClick={() => handlePageClick(index + 1)}
+                      className={`h-8 w-8 flex items-center justify-center rounded ${
+                        currentPage === index + 1
+                          ? "bg-green-700 text-white"
+                          : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  </li>
+                ))}
 
+                {/* Next Page */}
+                <li>
+                  <button
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage === getTotalPages()}
+                    className={`h-8 w-8 flex items-center justify-center rounded ${
+                      currentPage === getTotalPages()
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                    }`}
+                  >
+                    ›
+                  </button>
+                </li>
+
+                {/* Last Page */}
+                <li>
+                  <button
+                    onClick={() => setCurrentPage(getTotalPages())}
+                    disabled={currentPage === getTotalPages()}
+                    className={`h-8 w-8 flex items-center justify-center rounded ${
+                      currentPage === getTotalPages()
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                    }`}
+                  >
+                    »
+                  </button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -919,20 +948,22 @@ const Produk = () => {
                     )}
                   </div>
                   <div className="flex flex-col items-start mb-4">
-          <label className="text-gray-700 font-medium mb-2">Satuan *</label>
-          <select
-            name="unit"
-            value={newProduct.unit}  // Mengambil nilai yang dipilih dari state
-            onChange={handleChange}  // Menangani perubahan nilai dropdown
-            className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-300"
-          >
-            <option value="">Pilih Satuan</option>
-            {units.map((unit) => (
-              <option key={unit.id} value={unit.id}>
-                {unit.nama_satuan}
-              </option>
-            ))}
-          </select>
+                    <label className="text-gray-700 font-medium mb-2">
+                      Satuan *
+                    </label>
+                    <select
+                      name="unit"
+                      value={newProduct.unit} // Mengambil nilai yang dipilih dari state
+                      onChange={handleChange} // Menangani perubahan nilai dropdown
+                      className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-300"
+                    >
+                      <option value="">Pilih Satuan</option>
+                      {units.map((unit) => (
+                        <option key={unit.id} value={unit.id}>
+                          {unit.nama_satuan}
+                        </option>
+                      ))}
+                    </select>
 
                     {errors.unit && (
                       <span className="text-red-500 text-sm">
@@ -1061,29 +1092,40 @@ const Produk = () => {
       {/* Detail modal */}
       {/* Modal Detail Produk */}
       {productToDelete && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: '#fff',
-            padding: '20px',
-            borderRadius: '5px',
-            width: '300px',
-            textAlign: 'center'
-          }}>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "20px",
+              borderRadius: "5px",
+              width: "300px",
+              textAlign: "center",
+            }}
+          >
             <h2>Are you sure you want to delete ?</h2>
             <div>
-              <button onClick={closePopupDelete}  style={buttonStyles}>Cancel</button>
-              <button onClick={confirmDeleteProduct} style={{ ...buttonStyles, backgroundColor: 'red' }}>Confirm</button>
+              <button onClick={closePopupDelete} style={buttonStyles}>
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteProduct}
+                style={{ ...buttonStyles, backgroundColor: "red" }}
+              >
+                Confirm
+              </button>
             </div>
           </div>
         </div>

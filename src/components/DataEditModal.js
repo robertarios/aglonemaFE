@@ -6,21 +6,51 @@ const DataEditModal = ({ isOpen, onClose, data, onUserUpdated }) => {
     id: "",
     name: "",
     email: "",
-    accessLevel: "",
+    accessLevel: "user", // Default "user" before data is fetched
     dataCenter: "",
   });
+  const [dataCenters, setDataCenters] = useState([]); // State for data centers
+  const [warehouses, setWarehouses] = useState([]); // State for Gudang (Data Centers)
+  const [error, setError] = useState(""); // Error state for validation
 
+  // Fetch data centers (from pusatdata API)
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/pusatdata")
+      .then((response) => {
+        setDataCenters(response.data.dataCenters);
+      })
+      .catch((error) => {
+        console.error("Error fetching data centers:", error);
+      });
+  }, []);
+
+  // Fetch Gudang options (from Gudang API)
+  useEffect(() => {
+    const fetchWarehouses = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/gudang"); // Ganti dengan endpoint API gudang kamu
+        setWarehouses(response.data);
+      } catch (error) {
+        console.error("Gagal mengambil data gudang:", error);
+      }
+    };
+
+    fetchWarehouses();
+  }, []);
+
+  // Set form data when 'data' prop changes
   useEffect(() => {
     if (data) {
       setFormData({
         id: data.id,
         name: data.name,
         email: data.email,
-        accessLevel: data.access_level,
+        accessLevel: data.access_level || "user", // Default to "user" if access_level is not available
         dataCenter: data.data_center,
       });
     }
-  }, [data]);
+  }, [data]); // Run when 'data' prop changes
 
   // Handle input changes
   const handleChange = (e) => {
@@ -35,8 +65,17 @@ const DataEditModal = ({ isOpen, onClose, data, onUserUpdated }) => {
   const handleSave = async (e) => {
     e.preventDefault();
 
+    // Manual validation for access level
+    if (formData.accessLevel !== "admin" && formData.accessLevel !== "user") {
+      setError("Access level must be either 'admin' or 'user'.");
+      return;
+    }
+
     try {
-      const response = await axios.put(`http://localhost:5000/api/pusatdata/${formData.id}`, formData);
+      const response = await axios.put(
+        `http://localhost:5000/api/pusatdata/${formData.id}`,
+        formData
+      );
       if (response.status === 200) {
         onUserUpdated(response.data); // Update the user in parent component
         onClose(); // Close the modal
@@ -50,7 +89,9 @@ const DataEditModal = ({ isOpen, onClose, data, onUserUpdated }) => {
   // Handle Delete
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`http://localhost:5000/api/pusatdata/${formData.id}`);
+      const response = await axios.delete(
+        `http://localhost:5000/api/pusatdata/${formData.id}`
+      );
       if (response.status === 200) {
         alert("User deleted successfully.");
         onUserUpdated(null); // Remove the user from parent state
@@ -89,23 +130,32 @@ const DataEditModal = ({ isOpen, onClose, data, onUserUpdated }) => {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2">Access Level</label>
-            <input
-              type="text"
+            <select
               name="accessLevel"
               value={formData.accessLevel}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded"
-            />
+            >
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+            </select>
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2">Data Center</label>
-            <input
-              type="text"
+            <select
               name="dataCenter"
               value={formData.dataCenter}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded"
-            />
+            >
+              <option value="">Select Data Center</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.name}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="flex justify-between mt-4">
             <button
@@ -122,7 +172,7 @@ const DataEditModal = ({ isOpen, onClose, data, onUserUpdated }) => {
               Save
             </button>
             <button
-              type="button"
+              type="submit"
               onClick={handleDelete}
               className="bg-red-500 text-white py-2 px-6 rounded-full"
             >
