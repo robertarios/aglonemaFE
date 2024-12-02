@@ -8,7 +8,7 @@ const InOut = () => {
   const [filteredStocks, setFilteredStocks] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false); // For the confirmation modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const itemsPerPage = 10;
 
   // Fetch stock data from backend
@@ -68,16 +68,25 @@ const InOut = () => {
           if (stock.addStock > 0 || stock.outStock > 0) {
             const updatedStock = stock.stock + stock.addStock - stock.outStock;
   
-            // Log nilai yang dikirimkan
+            // Log nilai yang dikirimkan untuk memastikan data yang benar dikirimkan
             console.log(`Updating stock for SKU: ${stock.sku}, Updated stock: ${updatedStock}`);
   
-            // Kirim request PUT ke API menggunakan ID (menggunakan `stock.id`, bukan `stock.sku`)
-            const response = await axios.put(
-              `http://localhost:5000/api/products/update-stock/${stock.id}`, // Menggunakan `stock.id`
+            // Kirim request PUT ke API untuk memperbarui stok
+            const updateResponse = await axios.put(
+              `http://localhost:5000/api/products/update-stock/${stock.id}`,
               { stock: updatedStock }
             );
   
-            console.log('Response from backend:', response.data);
+            // Kirim riwayat stok ke API untuk disimpan
+            const historyResponse = await axios.post(
+              "http://localhost:5000/api/stock/stock-history",
+              {
+                productId: stock.id,
+                addStock: stock.addStock,
+                outStock: stock.outStock,
+              }
+            );
+            console.log('Stock history response:', historyResponse.data);            
   
             return {
               ...stock,
@@ -96,7 +105,7 @@ const InOut = () => {
       console.error("Error saving stock updates:", error);
       alert(error.message || "Terjadi kesalahan saat menyimpan perubahan stok.");
     }
-  };
+  };  
 
   // Pagination helpers
   const getPaginatedData = () => {
