@@ -16,26 +16,26 @@ import Logo from "../assets/logodark.png"; // Sesuaikan path sesuai lokasi gamba
 
 function NewsidebarUser() {
   const [username, setUsername] = useState("");
-  const [role, setRole] = useState(localStorage.getItem('role') || '');
-  const [showLogoutModal, setShowLogoutModal] = useState(false);  
+  const [role, setRole] = useState(localStorage.getItem("role") || "");
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
-    console.log('userId from localStorage:', userId); // Debug log
+    const userId = localStorage.getItem("userId");
+    console.log("userId from localStorage:", userId); // Debug log
     if (userId) {
       fetch(`http://localhost:5000/api/users/${userId}`)
         .then((response) => response.json())
         .then((data) => {
-          console.log('User data fetched:', data); // Debug log
+          console.log("User data fetched:", data); // Debug log
           if (data.name) {
             setUsername(data.name);
           }
-          if (role) { 
+          if (role) {
             setRole(role); // Set role di state
           }
         })
-        .catch((error) => console.error('Error fetching user:', error));
+        .catch((error) => console.error("Error fetching user:", error));
     }
   }, []);
 
@@ -50,14 +50,12 @@ function NewsidebarUser() {
 
       {/* Sidebar Menu */}
       <div className="h-screen bg-[#EDF3FF]">
-      <div className="pt-6 pb-8 flex flex-col justify-start items-start pl-5 pr-4 py-[13.51px] bg-[#DAE6FF]">
-        <div className="text-sm font-normal leading-[21px]">
-          {username}
+        <div className="pt-6 pb-8 flex flex-col justify-start items-start pl-5 pr-4 py-[13.51px] bg-[#DAE6FF]">
+          <div className="text-sm font-normal leading-[21px]">{username}</div>
+          <div className="text-sm font-normal text-[#2f6d64] leading-[21px]">
+            {role}
+          </div>
         </div>
-        <div className="text-sm font-normal text-[#2f6d64] leading-[21px]">
-          {role}
-        </div>
-      </div>
 
         <SidebarItem
           icon={faTachometerAlt}
@@ -71,7 +69,6 @@ function NewsidebarUser() {
           path="/laporanuser"
           isActive={isActive("/laporanuser")}
         />
-        
       </div>
     </div>
   );
