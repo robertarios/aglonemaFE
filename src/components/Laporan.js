@@ -66,9 +66,9 @@ const LaporanPage = () => {
 
     const csvHeaders = "No.,Kode SKU,Nama Produk,In,Out,Stok,Date\n";
     const csvRows = filteredDataForCSV
-      .map((item) =>
+      .map((item, index) =>
         [
-          item.no,
+          index + 1, // Index + 1 untuk nomor urut
           item.sku,
           item.nama,
           item.in,
@@ -162,9 +162,9 @@ const LaporanPage = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((item) => (
+              {filteredData.map((item, index) => (
                 <tr key={item.nomor} className="border-b">
-                  <td className="py-4 px-6 text-center">{item.nomor}</td>
+                  <td className="py-4 px-6 text-center">{index + 1}</td> {/* Nomor urut berdasarkan index + 1 */}
                   <td className="py-4 px-6 text-center">{item.kodeSKU}</td>
                   <td className="py-4 px-6 text-center">{item.namaProduk}</td>
                   <td className="py-4 px-6 text-center">{item.in}</td>
