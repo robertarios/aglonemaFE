@@ -8,35 +8,45 @@ const LaporanPage = () => {
   const [endDate, setEndDate] = useState(null);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [products, setProducts] = useState([]);
-  const [stockHistory, setStockHistory] = useState([]);
-  
+  const [reportData, setReportData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    // Fetch products data
-    const fetchProducts = async () => {
+    const fetchReportData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/products");
+        const response = await fetch("http://localhost:5000/api/stock/report");
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
         const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+        setReportData(data.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
       }
     };
 
-    // Fetch stock history data
-    const fetchStockHistory = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/stock/stock-history");
-        const data = await response.json();
-        setStockHistory(data);
-      } catch (error) {
-        console.error("Error fetching stock history:", error);
-      }
-    };
-
-    fetchProducts();
-    fetchStockHistory();
+    fetchReportData();
   }, []);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredData = reportData.filter((item) => {
+    const nameMatch =
+      item.namaProduk && item.namaProduk.toLowerCase().includes(searchTerm.toLowerCase());
+    const skuMatch = item.sku && item.sku.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const dateInRange =
+      (!startDate || !endDate || 
+        (startDate.getTime() === endDate.getTime() && new Date(item.createdAt).toLocaleDateString() === startDate.toLocaleDateString())) ||
+      (new Date(item.createdAt) >= startDate && new Date(item.createdAt) <= new Date(endDate).setDate(endDate.getDate() + 1)); // Extend endDate by 1 day
+
+    return (!searchTerm || nameMatch || skuMatch) && dateInRange;
+  });
 
   const toggleDatePicker = () => {
     setIsDatePickerVisible(!isDatePickerVisible);
@@ -46,72 +56,53 @@ const LaporanPage = () => {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
-    setIsDatePickerVisible(false); // Close DatePicker after selecting
+    setIsDatePickerVisible(false);
   };
 
   const downloadCSV = () => {
-    const csvHeaders = "No.,Kode SKU,Nama Produk,In,Out,Stok\n";
-    const csvRows = filteredData
-      .map((item) =>
+    const filteredDataForCSV = reportData.filter((item) => {
+      const dateInRange =
+        !startDate ||
+        !endDate ||
+        (startDate.getTime() === endDate.getTime() &&
+          new Date(item.createdAt).toLocaleDateString() === startDate.toLocaleDateString()) ||
+        (new Date(item.createdAt) >= startDate && new Date(item.createdAt) <= new Date(endDate).setDate(endDate.getDate() + 1)); // Extend endDate by 1 day
+      const matchesSearchTerm =
+        !searchTerm ||
+        (item.nama && item.nama.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (item.sku && item.sku.toLowerCase().includes(searchTerm.toLowerCase()));
+      return dateInRange && matchesSearchTerm;
+    });
+
+    const csvHeaders = "No.,Kode SKU,Nama Produk,In,Out,Stok,Date\n";
+    const csvRows = filteredDataForCSV
+      .map((item, index) =>
         [
-          item.no,
+          index + 1, 
           item.sku,
           item.nama,
           item.in,
           item.out,
           item.stok,
+          item.createdAt,
         ].join(",")
       )
       .join("\n");
+
     const csvData = csvHeaders + csvRows;
 
     const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "laporan_stok.csv";
+    a.download = "report.csv";
     a.click();
-    URL.revokeObjectURL(url); // Revoke URL after download
+    URL.revokeObjectURL(url);
   };
 
-  // Filter and merge product data with stock history data
-  const filteredData = products
-    .map((product) => {
-      const stockHistoryForProduct = stockHistory.filter(
-        (history) => history.product_id === product.id
-      );
-      
-      // Aggregate stock history based on date range and calculate In, Out, and Stok
-      const filteredHistory = stockHistoryForProduct.filter((history) => {
-        if (!startDate || !endDate) return true; // If no date range, show all data
-        const historyDate = new Date(history.created_at);
-        return historyDate >= startDate && historyDate <= endDate;
-      });
-
-      // Calculate in, out, and stock for the given product
-      const inStock = filteredHistory.reduce((total, history) => total + history.add_stock, 0);
-      const outStock = filteredHistory.reduce((total, history) => total + history.out_stock, 0);
-      const remainingStock = product.stock + inStock - outStock;
-
-      return {
-        no: product.id,
-        sku: product.sku,
-        nama: product.name,
-        in: inStock,
-        out: outStock,
-        stok: remainingStock,
-      };
-    })
-    .filter((item) =>
-      item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.sku.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
   return (
-    <div className="p-6 bg-gray-100 min-h-screen space-y-6">
-      <h2 className="text-lg font-bold text-[#272d3b] mb-4 text-left relative">
-        Stok Produk
-      </h2>
+    <div className="p-6 bg-white-100 min-h-screen space-y-6">
+      <h2 className="text-lg font-bold text-[#272d3b] mb-4 text-left relative">Stok Produk</h2>
       <hr className="border-t border-[#e0e0e0] mb-4" />
 
       <div className="flex justify-between items-center mt-4 lg:mt-0">
@@ -122,10 +113,10 @@ const LaporanPage = () => {
             </span>
             <input
               type="text"
-              placeholder="Cari SKU atau Produk..."
+              placeholder="Cari Produk..."
               className="w-full pl-10 p-2 border border-gray-500 rounded-full"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearch}
             />
           </div>
 
@@ -164,40 +155,34 @@ const LaporanPage = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left py-4 px-6 text-gray-500 font-semibold">No.</th>
-              <th className="text-left py-4 px-6 text-gray-500 font-semibold">Kode SKU</th>
-              <th className="text-left py-4 px-6 text-gray-500 font-semibold">Nama Produk</th>
-              <th className="text-left py-4 px-6 text-gray-500 font-semibold">In</th>
-              <th className="text-left py-4 px-6 text-gray-500 font-semibold">Out</th>
-              <th className="text-left py-4 px-6 text-gray-500 font-semibold">Stok</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.map((item, index) => (
-              <tr key={index} className="border-b">
-                <td className="py-4 px-6">{item.no}</td>
-                <td className="py-4 px-6">{item.sku}</td>
-                <td className="py-4 px-6">{item.nama}</td>
-                <td className="py-4 px-6">{item.in}</td>
-                <td className="py-4 px-6">{item.out}</td>
-                <td className="py-4 px-6">{item.stok}</td>
+      <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr className="bg-gray-100 text-black text-left">
+                <th className="py-3 px-6 font-semibold text-center text-[18px] w-32">No.</th>
+                <th className="py-3 px-6 font-semibold text-center text-[18px] w-32">Kode SKU</th>
+                <th className="py-3 px-6 font-semibold text-center text-[18px] w-64">Nama Produk</th>
+                <th className="py-3 px-6 font-semibold text-center text-[18px] w-32">Stok Masuk</th>
+                <th className="py-3 px-6 font-semibold text-center text-[18px] w-32">Stok Keluar</th>
+                <th className="py-3 px-6 font-semibold text-center text-[18px] w-32">Jumlah Stok</th>
+                <th className="py-3 px-6 font-semibold text-center text-[18px] w-32">Tanggal</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div className="flex justify-end mt-4">
-          <div className="flex items-center space-x-1">
-            <button className="px-3 py-1 bg-gray-200 text-gray-500 rounded-l">«</button>
-            <button className="px-3 py-1 bg-gray-200 text-gray-500">‹</button>
-            <button className="px-3 py-1 bg-green-800 text-white">1</button>
-            <button className="px-3 py-1 bg-gray-200 text-gray-500">›</button>
-            <button className="px-3 py-1 bg-gray-200 text-gray-500 rounded-r">»</button>
-          </div>
+            </thead>
+            <tbody>
+              {filteredData.map((item, index) => (
+                <tr key={item.nomor} className="border-b">
+                  <td className="py-4 px-6 text-center">{index + 1}</td>
+                  <td className="py-4 px-6 text-center">{item.kodeSKU}</td>
+                  <td className="py-4 px-6 text-center">{item.namaProduk}</td>
+                  <td className="py-4 px-6 text-center">{item.in}</td>
+                  <td className="py-4 px-6 text-center">{item.out}</td>
+                  <td className="py-4 px-6 text-center">{item.stock}</td>
+                  <td className="py-4 px-6 text-center">{new Date(item.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
