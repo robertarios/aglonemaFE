@@ -9,8 +9,8 @@ const LaporanPage = () => {
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [reportData, setReportData] = useState([]);
-  const [loading, setLoading] = useState(true);  
-  const [error, setError] = useState(null);  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchReportData = async () => {
@@ -20,28 +20,35 @@ const LaporanPage = () => {
           throw new Error("Failed to fetch data");
         }
         const data = await response.json();
-        setReportData(data.data);  
-        setLoading(false);  
+        setReportData(data.data);
+        setLoading(false);
       } catch (err) {
-        setError(err.message);  
+        setError(err.message);
         setLoading(false);
       }
     };
 
     fetchReportData();
-  }, []); 
+  }, []);
 
   const handleSearch = (e) => {
-    setSearchTerm(e.target.value); 
+    setSearchTerm(e.target.value);
   };
 
-  const filteredData = reportData.filter(item => {
+  const filteredData = reportData.filter((item) => {
     // Check if searchTerm is provided, and if so, filter based on SKU or product name
-    const nameMatch = item.namaProduk && item.namaProduk.toLowerCase().includes(searchTerm.toLowerCase());
+    const nameMatch =
+      item.namaProduk && item.namaProduk.toLowerCase().includes(searchTerm.toLowerCase());
     const skuMatch = item.sku && item.sku.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Include the item if it matches either the product name or SKU
-    return !searchTerm || nameMatch || skuMatch;
+    // Apply date range filter (special case for same start and end date)
+    const dateInRange =
+      (!startDate || !endDate || 
+        (startDate.getTime() === endDate.getTime() && new Date(item.createdAt).toLocaleDateString() === startDate.toLocaleDateString())) ||
+      (new Date(item.createdAt) >= startDate && new Date(item.createdAt) <= new Date(endDate).setDate(endDate.getDate() + 1)); // Extend endDate by 1 day
+
+    // Include the item if it matches either the product name, SKU, and/or date range
+    return (!searchTerm || nameMatch || skuMatch) && dateInRange;
   });
 
   const toggleDatePicker = () => {
@@ -52,15 +59,21 @@ const LaporanPage = () => {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
-    setIsDatePickerVisible(false); 
+    setIsDatePickerVisible(false);
   };
 
   const downloadCSV = () => {
     const filteredDataForCSV = reportData.filter((item) => {
-      const dateInRange = !startDate || !endDate || (new Date(item.date) >= startDate && new Date(item.date) <= endDate);
-      const matchesSearchTerm = !searchTerm || 
-                                (item.nama && item.nama.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                                (item.sku && item.sku.toLowerCase().includes(searchTerm.toLowerCase()));
+      const dateInRange =
+        !startDate ||
+        !endDate ||
+        (startDate.getTime() === endDate.getTime() &&
+          new Date(item.createdAt).toLocaleDateString() === startDate.toLocaleDateString()) ||
+        (new Date(item.createdAt) >= startDate && new Date(item.createdAt) <= new Date(endDate).setDate(endDate.getDate() + 1)); // Extend endDate by 1 day
+      const matchesSearchTerm =
+        !searchTerm ||
+        (item.nama && item.nama.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (item.sku && item.sku.toLowerCase().includes(searchTerm.toLowerCase()));
       return dateInRange && matchesSearchTerm;
     });
 
@@ -74,7 +87,7 @@ const LaporanPage = () => {
           item.in,
           item.out,
           item.stok,
-          item.date,
+          item.createdAt,
         ].join(",")
       )
       .join("\n");
@@ -92,9 +105,7 @@ const LaporanPage = () => {
 
   return (
     <div className="p-6 bg-white-100 min-h-screen space-y-6">
-      <h2 className="text-lg font-bold text-[#272d3b] mb-4 text-left relative">
-        Stok Produk
-      </h2>
+      <h2 className="text-lg font-bold text-[#272d3b] mb-4 text-left relative">Stok Produk</h2>
       <hr className="border-t border-[#e0e0e0] mb-4" />
 
       <div className="flex justify-between items-center mt-4 lg:mt-0">
@@ -164,13 +175,13 @@ const LaporanPage = () => {
             <tbody>
               {filteredData.map((item, index) => (
                 <tr key={item.nomor} className="border-b">
-                  <td className="py-4 px-6 text-center">{index + 1}</td> {/* Nomor urut berdasarkan index + 1 */}
+                  <td className="py-4 px-6 text-center">{index + 1}</td>
                   <td className="py-4 px-6 text-center">{item.kodeSKU}</td>
                   <td className="py-4 px-6 text-center">{item.namaProduk}</td>
                   <td className="py-4 px-6 text-center">{item.in}</td>
                   <td className="py-4 px-6 text-center">{item.out}</td>
                   <td className="py-4 px-6 text-center">{item.stock}</td>
-                  <td className="py-4 px-6 text-center">{item.createdAt}</td>
+                  <td className="py-4 px-6 text-center">{new Date(item.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
