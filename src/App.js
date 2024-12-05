@@ -15,6 +15,8 @@ import Kedaluarsa from './pages/PengaturanKedaluarsa';
 import PusatData from './pages/PusatData';
 import InOut from './pages/InOutPage';
 import Panduan from './pages/Panduan';
+import ResetData from "./pages/ResetData";
+import UbahSandi from "./pages/UbahSandi";
 
 function App() {
   return (
@@ -35,6 +37,8 @@ function App() {
         <Route path="/keluarmasuk" element={<InOut />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/petunjuk-manajemen-gudang" element={<Panduan />} />
+        <Route path="/reset-data" element={<ResetData />} />
+        <Route path="/ubah-kata-sandi" element={<UbahSandi />} />
       </Routes>
     </div>
   );

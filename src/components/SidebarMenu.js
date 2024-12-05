@@ -39,7 +39,7 @@ const SidebarMenu = () => {
         <NavLink 
           to="/ubah-kata-sandi" 
           className={({ isActive }) => 
-            `pl-4 py-8 text-[#2f6d64] ${isActive ? 'bg-white border-l-4 border-[#2f6d64] py-4 px-16' : ''}`
+            `pl-4 text-[#2f6d64] ${isActive ? 'bg-white border-l-4 border-[#2f6d64] py-4 px-16' : ''}`
           }
         >
           Ubah Kata Sandi

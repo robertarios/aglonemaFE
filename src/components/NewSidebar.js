@@ -55,7 +55,7 @@ function Newsidebar() {
   };
 
   return (
-    <div className="w-64 h-screen bg-[#EDF3FF] shadow flex-col justify-start items-start">
+    <div className="w-64 h-screen bg-[#EDF3FF] shadow flex-col justify-start items-start ">
       {/* Logo */}
       <div className="px-4 py-4 bg-[#edf3ff] flex justify-center items-center">
         <img className="relative left-0 top-0" src={Logo} alt="Logo" />
