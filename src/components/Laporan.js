@@ -36,18 +36,15 @@ const LaporanPage = () => {
   };
 
   const filteredData = reportData.filter((item) => {
-    // Check if searchTerm is provided, and if so, filter based on SKU or product name
     const nameMatch =
       item.namaProduk && item.namaProduk.toLowerCase().includes(searchTerm.toLowerCase());
     const skuMatch = item.sku && item.sku.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Apply date range filter (special case for same start and end date)
     const dateInRange =
       (!startDate || !endDate || 
         (startDate.getTime() === endDate.getTime() && new Date(item.createdAt).toLocaleDateString() === startDate.toLocaleDateString())) ||
       (new Date(item.createdAt) >= startDate && new Date(item.createdAt) <= new Date(endDate).setDate(endDate.getDate() + 1)); // Extend endDate by 1 day
 
-    // Include the item if it matches either the product name, SKU, and/or date range
     return (!searchTerm || nameMatch || skuMatch) && dateInRange;
   });
 
@@ -81,7 +78,7 @@ const LaporanPage = () => {
     const csvRows = filteredDataForCSV
       .map((item, index) =>
         [
-          index + 1, // Index + 1 untuk nomor urut
+          index + 1, 
           item.sku,
           item.nama,
           item.in,
