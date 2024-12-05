@@ -89,18 +89,32 @@ function EditProfile() {
     }
 
     try {
-      // Update data perusahaan berdasarkan userId
-      await axios.put(
-        `http://localhost:5000/api/company/updateCompany/${userId}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      alert("Profile updated successfully!");
+      // Mengecek apakah perusahaan sudah ada
+      if (companyData) {
+        // Jika perusahaan ada, lakukan update
+        await axios.post(
+          `http://localhost:5000/api/company/updateOrCreateCompany/${userId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        alert("Profile updated successfully!");
+      } else {
+        // Jika perusahaan tidak ada, lakukan insert
+        await axios.post(
+          `http://localhost:5000/api/company/updateOrCreateCompany/${userId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        alert("Profile created successfully!");
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Failed to update profile. Please try again.");
