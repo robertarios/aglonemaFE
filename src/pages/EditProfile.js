@@ -1,95 +1,146 @@
-import { useState } from "react";
-import Newsidebar from "../components/NewSidebar"; // Mengimpor Sidebar yang baru
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Newsidebar from "../components/NewSidebar";
 import Navbar from "../components/Navbar";
-import Iconverify from "../assets/verifycard.png";
 import VerificationCard from "../components/VerificationCard";
 import SidebarMenu from "../components/SidebarMenu";
 
 function EditProfile() {
   const [name, setName] = useState("");
+  const [fullname, setNameUser] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState(""); // State untuk nomor telepon
   const [logo, setLogo] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [companyData, setCompanyData] = useState(null); // Untuk menyimpan data perusahaan
 
-  // Handlers for input changes
+  // Ambil userId dari localStorage
+  const userId = localStorage.getItem("userId");
+
+  // Fetch data perusahaan saat komponen pertama kali dimuat
+  useEffect(() => {
+    if (userId) {
+      axios
+        .get(`http://localhost:5000/api/company/${userId}`)
+        .then((response) => {
+          const data = response.data;
+          setCompanyData(data);
+          setName(data.company_name);
+          setEmail(data.email);
+          setAddress(data.address);
+          setPhone(data.phone);
+          const imageUrl = data.logo
+            ? `http://localhost:5000/${data.logo}`
+            : "https://via.placeholder.com/60x60";
+          setImagePreview(imageUrl);
+        })
+        .catch((error) => {
+          console.error("Error fetching company data:", error);
+        });
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (userId) {
+      axios
+        .get(`http://localhost:5000/api/users/${userId}`) // Ganti dengan URL API yang sesuai
+        .then((response) => {
+          const userData = response.data;
+          setNameUser(userData.name); // Set name dari response
+          setEmail(userData.email); // Set email dari response
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    }
+  }, [userId]);
+
+  // Fungsi untuk menangani perubahan input
   const handleNameChange = (event) => setName(event.target.value);
+  const handleNameUserChange = (event) => setNameUser(event.target.value);
   const handleEmailChange = (event) => setEmail(event.target.value);
   const handleAddressChange = (event) => setAddress(event.target.value);
+  const handlePhoneChange = (event) => setPhone(event.target.value);
 
-  // Handle form submission
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log("Profile updated:", {
-      name,
-      email,
-      address,
-      logo,
-    });
-  };
-  const [imagePreview, setImagePreview] = useState(null);
-
-  // Fungsi untuk menangani perubahan gambar
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
+  // Fungsi untuk menangani preview logo
+  const handleLogoChange = (event) => {
+    const file = event.target.files[0];
+    setLogo(file);
     if (file) {
-      // Membaca file dan menampilkan preview
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result); // Update state dengan URL gambar
-      };
-      reader.readAsDataURL(file); // Membaca gambar sebagai Data URL
+      reader.onloadend = () => setImagePreview(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Fungsi untuk submit data ke backend
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Membuat form-data untuk mengirim file dan data lainnya
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("address", address);
+    formData.append("phone", phone); // Tambahkan nomor telepon
+    if (logo) {
+      formData.append("logo", logo);
+    }
+
+    try {
+      // Update data perusahaan berdasarkan userId
+      await axios.put(
+        `http://localhost:5000/api/company/updateCompany/${userId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Please try again.");
     }
   };
 
   return (
     <div className="flex h-[920px] bg-gray-100">
-      {/* Sidebar */}
       <Newsidebar />
-      {/* Main Content */}
       <div className="flex-1">
         <Navbar />
         <div className="flex">
-          {/* Left Side: Menu Edit Profile */}
           <div className="w-1/4 py-10 mr-6">
             <SidebarMenu />
             <VerificationCard />
           </div>
-
-          {/* Right Side: Form and Cards */}
           <div className="flex-1 mr-8">
-            {/* Cards Section */}
             <div className="flex flex-col">
               <div className="w-full p-5 mt-10 bg-white rounded-lg shadow-md flex flex-col mr-8">
-                {/* Header */}
                 <h2 className="text-lg font-bold text-[#272d3b] mb-4 text-left">
                   Perusahaan
                 </h2>
                 <hr className="border-t border-[#e0e0e0] mb-4" />
-
-                {/* Konten */}
                 <div className="grid grid-cols-2 gap-4">
-                  {/* Logo Pengguna */}
                   <div className="flex items-center gap-4">
-                    {/* Gambar Preview */}
                     <img
                       className="w-[60px] h-[60px] rounded-full"
-                      src={imagePreview || "https://via.placeholder.com/60x60"} // Menampilkan gambar preview atau placeholder
+                      src={imagePreview}
                       alt="User Logo"
                     />
                     <div>
                       <p className="text-xs text-[#272d3b] opacity-50 text-left">
                         Logo Pengguna (Opsional)
                       </p>
-
-                      {/* Hidden file input */}
                       <input
                         type="file"
                         id="fileInput"
                         className="hidden"
-                        onChange={handleLogoChange} // Handle file selection
+                        onChange={handleLogoChange}
                       />
-
-                      {/* Button to trigger file selection */}
                       <button
                         className="mt-2 px-3 py-1 bg-[#467469]/25 text-left text-xs font-bold text-[#467469] rounded-lg"
                         onClick={() =>
@@ -100,21 +151,17 @@ function EditProfile() {
                       </button>
                     </div>
                   </div>
-
-                  {/* Nama Pengguna */}
                   <div>
                     <label className="block text-sm text-[#3c4b64] mb-1 text-left">
                       Nama Perusahaan <span className="text-[#f24242]">*</span>
                     </label>
                     <input
                       type="text"
-                      value="Pengguna"
-                      disabled
+                      value={name}
+                      onChange={handleNameChange}
                       className="w-full h-[40px] px-4 border rounded-full text-[#5c6873]"
                     />
                   </div>
-
-                  {/* No. Telepon */}
                   <div className="col-span-2">
                     <label className="block text-sm text-[#3c4b64] mb-1 text-left">
                       No. Telepon <span className="text-[#f24242]">*</span>
@@ -126,12 +173,12 @@ function EditProfile() {
                       <input
                         type="text"
                         placeholder="85831358991"
+                        value={phone} // Bind ke state nomor telepon
+                        onChange={handlePhoneChange} // Update state
                         className="w-full h-[40px] px-4 border-t border-b border-r rounded-r-full text-[#5c6873]"
                       />
                     </div>
                   </div>
-
-                  {/* Alamat */}
                   <div className="col-span-2">
                     <label className="block text-sm text-[#3c4b64] mb-1 text-left">
                       Alamat
@@ -140,22 +187,18 @@ function EditProfile() {
                       type="text"
                       placeholder="Nama Kota"
                       value={address}
-                      onChange={handleAddressChange} // Bind address state
+                      onChange={handleAddressChange}
                       className="w-full h-[40px] px-4 border rounded-full mb-4 text-[#5c6873]"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Card 2*/}
               <div className="w-full p-5 mt-10 bg-white rounded-lg shadow-md flex flex-col mr-8">
-                {/* Header */}
                 <h2 className="text-lg font-bold text-[#272d3b] mb-4 text-left">
                   Profil Pengguna
                 </h2>
                 <hr className="border-t border-[#e0e0e0] mb-4" />
-
-                {/* Konten */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
                     <label className="block text-sm text-[#3c4b64] mb-1 text-left">
@@ -164,13 +207,11 @@ function EditProfile() {
                     <input
                       type="text"
                       placeholder="Nama Anda"
-                      value={name}
-                      onChange={handleNameChange} // Bind name state
+                      value={fullname}
+                      onChange={handleNameUserChange}
                       className="w-full h-[40px] px-4 border rounded-full text-[#5c6873]"
                     />
                   </div>
-
-                  {/* Email */}
                   <div className="col-span-2">
                     <label className="block text-sm text-[#3c4b64] mb-1 text-left">
                       Email
@@ -178,15 +219,14 @@ function EditProfile() {
                     <input
                       type="email"
                       value={email}
-                      onChange={handleEmailChange} // Bind email state
+                      onChange={handleEmailChange}
                       placeholder="exam@email.com"
+                      disabled
                       className="w-full h-[40px] px-4 mb-4 border rounded-full text-[#5c6873]"
                     />
                   </div>
                 </div>
               </div>
-
-              {/* Save Button */}
               <div className="flex justify-end mt-6">
                 <button
                   onClick={handleSubmit}
