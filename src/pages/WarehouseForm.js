@@ -43,64 +43,67 @@ const WarehouseForm = ({ warehouse, onClose, onSave, onDelete }) => {
   };
 
   return (
-    <div className="modal bg-white p-6 rounded shadow-lg">
-      <form onSubmit={handleSave}>
-        <div className="mb-4">
-          <label className="block text-gray-700">Warehouse Name</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Warehouse Address</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Warehouse Details</label>
-          <input
-            type="text"
-            name="detail"
-            value={formData.detail}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+        <h2 className="text-2xl font-semibold mb-4">Edit Gudang</h2>
+        <form onSubmit={handleSave}>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-left">Warehouse Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-left">Warehouse Address</label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-left">Warehouse Details</label>
+            <input
+              type="text"
+              name="detail"
+              value={formData.detail}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          </div>
 
-        <div className="flex justify-between">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
-          >
-            Close
-          </button>
-          <div>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded mr-2"
-            >
-              Save
-            </button>
+          <div className="flex justify-between">
             <button
               type="button"
-              onClick={handleDelete}
-              className="px-4 py-2 bg-red-500 text-white rounded"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
             >
-              Delete
+              Close
             </button>
+            <div>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded mr-2"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-500 text-white rounded"
+              >
+                Delete
+              </button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

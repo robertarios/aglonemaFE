@@ -1,73 +1,69 @@
 import { useState } from "react";
-import Newsidebar from "../components/NewSidebar"; // Mengimpor Sidebar yang baru
+import axios from "axios";
+import Newsidebar from "../components/NewSidebar";
 import Navbar from "../components/Navbar";
-import Iconverify from "../assets/verifycard.png";
-import VerificationCard from "../components/VerificationCard";
 import SidebarMenu from "../components/SidebarMenu";
 
 function UbahSandi() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
-  const [logo, setLogo] = useState(null);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  // Handlers for input changes
-  const handleNameChange = (event) => setName(event.target.value);
-  const handleEmailChange = (event) => setEmail(event.target.value);
-  const handleAddressChange = (event) => setAddress(event.target.value);
+  // Ambil userId dari localStorage
+  const userId = localStorage.getItem("userId");
 
-  // Handle form submission
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("Profile updated:", {
-      name,
-      email,
-      address,
-      logo,
-    });
-  };
-  const [imagePreview, setImagePreview] = useState(null);
 
-  // Fungsi untuk menangani perubahan gambar
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Membaca file dan menampilkan preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result); // Update state dengan URL gambar
-      };
-      reader.readAsDataURL(file); // Membaca gambar sebagai Data URL
+    // Validate inputs
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      setError("All fields are required.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError("New password and confirmation do not match.");
+      return;
+    }
+
+    try {
+      // Send the password change request to the backend
+      const response = await axios.put(
+        `http://localhost:5000/api/users/changePassword/${userId}`,
+        { oldPassword, newPassword, confirmPassword }
+      );
+
+      setSuccessMessage(response.data.message);
+      setError(null); // Clear any previous errors
+    } catch (error) {
+      console.error("Error updating password:", error);
+      setError(error.response.data.error || "Failed to update password.");
+      setSuccessMessage(""); // Clear success message
     }
   };
 
   return (
     <div className="flex h-[920px] bg-gray-100">
-      {/* Sidebar */}
       <Newsidebar />
-      {/* Main Content */}
       <div className="flex-1">
         <Navbar />
         <div className="flex">
-          {/* Left Side: Menu Edit Profile */}
           <div className="w-1/4 py-10 mr-6">
             <SidebarMenu />
-            <VerificationCard />
           </div>
-
-          {/* Right Side: Form and Cards */}
           <div className="flex-1 mr-8">
-            {/* Cards Section */}
             <div className="flex flex-col">
-              {/* Card 2*/}
               <div className="w-full p-5 mt-10 bg-white rounded-lg shadow-md flex flex-col mr-8">
-                {/* Header */}
                 <h2 className="text-lg font-bold text-[#272d3b] mb-4 text-left">
                   Ubah Kata Sandi
                 </h2>
                 <hr className="border-t border-[#e0e0e0] mb-4" />
+                
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+                {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
 
-                {/* Sandi Lama */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2 mt-4">
                     <label className="block text-sm text-[#3c4b64] mb-1 text-left">
@@ -76,11 +72,12 @@ function UbahSandi() {
                     <input
                       type="password"
                       placeholder="************"
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
                       className="w-full h-[40px] px-4 border rounded-full text-[#5c6873]"
                     />
                   </div>
 
-                  {/* Kata Sandi Baru */}
                   <div className="col-span-2 mt-2">
                     <label className="block text-sm text-[#3c4b64] mb-1 text-left">
                       Kata Sandi Baru
@@ -88,11 +85,12 @@ function UbahSandi() {
                     <input
                       type="password"
                       placeholder="************"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
                       className="w-full h-[40px] px-4 mb-4 border rounded-full text-[#5c6873]"
                     />
                   </div>
 
-                  {/* Konfirmasi Kata Sandi */}
                   <div className="col-span-2 mb-8">
                     <label className="block text-sm text-[#3c4b64] mb-1 text-left">
                       Konfirmasi Kata Sandi
@@ -100,13 +98,14 @@ function UbahSandi() {
                     <input
                       type="password"
                       placeholder="************"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       className="w-full h-[40px] px-4 mb-4 border rounded-full text-[#5c6873]"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Save Button */}
               <div className="flex justify-end mt-6">
                 <button
                   onClick={handleSubmit}
