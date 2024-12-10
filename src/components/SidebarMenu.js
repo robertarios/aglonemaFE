@@ -9,7 +9,7 @@ const SidebarMenu = () => {
         <NavLink 
           to="/editprofile" 
           className={({ isActive }) => 
-            `pl-4 text-[#2f6d64] ${isActive ? 'bg-white border-l-4 border-[#2f6d64] py-4 px-32' : ''}`
+            `pl-4 text-[#2f6d64] ${isActive ? 'bg-white border-l-4 border-[#2f6d64] py-4 px-20' : ''}`
           }
         >
           Edit Profile
@@ -19,7 +19,7 @@ const SidebarMenu = () => {
         <NavLink 
           to="/spesifikasi-tambahan" 
           className={({ isActive }) => 
-            `pl-4 text-[#2f6d64] ${isActive ? 'bg-white border-l-4 border-[#2f6d64] py-4 px-16' : ''}`
+            `pl-4 text-[#2f6d64] ${isActive ? 'bg-white border-l-4 border-[#2f6d64] py-4 px-8' : ''}`
           }
         >
           Spesifikasi Tambahan
@@ -29,7 +29,7 @@ const SidebarMenu = () => {
         <NavLink 
           to="/kedaluarsa" 
           className={({ isActive }) => 
-            `pl-4 text-[#2f6d64] ${isActive ? 'bg-white border-l-4 border-[#2f6d64] py-4 px-16' : ''}`
+            `pl-4 text-[#2f6d64] ${isActive ? 'bg-white border-l-4 border-[#2f6d64] py-4 px-8' : ''}`
           }
         >
           Pengaturan Kedaluarsa
