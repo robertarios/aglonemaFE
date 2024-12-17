@@ -17,6 +17,7 @@ import InOut from './pages/InOutPage';
 import Panduan from './pages/Panduan';
 import ResetData from "./pages/ResetData";
 import UbahSandi from "./pages/UbahSandi";
+import Spesifikasi from "./pages/Spesifikasi";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         <Route path="/petunjuk-manajemen-gudang" element={<Panduan />} />
         <Route path="/reset-data" element={<ResetData />} />
         <Route path="/ubah-kata-sandi" element={<UbahSandi />} />
+        <Route path="/spesifikasi-tambahan" element={<Spesifikasi />} />
       </Routes>
     </div>
   );
