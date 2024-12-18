@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { FaUpload, FaExclamationTriangle, FaCalendarAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import ProductChart from "./ProductChart";
 import axios from "axios";
 
 const Dashboard = () => {
-  const [products, setProducts] = useState([]); 
+  const [products, setProducts] = useState([]);
   const [totalStock, setTotalStock] = useState(0);
   const [popularProducts, setPopularProducts] = useState([]);
-  const [token, setToken] = useState(localStorage.getItem('token') || '');
-  const [role, setRole] = useState(localStorage.getItem('role') || '');
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [role, setRole] = useState(localStorage.getItem("role") || "");
 
   const fetchProducts = async () => {
     try {
@@ -22,7 +23,9 @@ const Dashboard = () => {
   // Fetch popular products based on stock history
   const fetchPopularProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/products/popular-products");
+      const response = await axios.get(
+        "http://localhost:5000/api/products/popular-products"
+      );
       setPopularProducts(response.data);
     } catch (error) {
       console.error("Error fetching popular products:", error);
@@ -39,7 +42,7 @@ const Dashboard = () => {
     setTotalStock(total);
   }, [products]);
 
-  if (role == "admin"){
+  if (role == "admin") {
     return (
       <div className="p-6 bg-gray-100 min-h-screen space-y-4">
         {/* Header Section */}
@@ -48,9 +51,10 @@ const Dashboard = () => {
           <p className="mt-1 text-sm">Telah Bergabung dengan Tim AgloStock</p>
           <div className="flex items-center justify-between mt-4">
             <div className="text-base font-light">
-              Pencatatan inventori lebih efisien dan efektif dimulai dari AgloStock
+              Pencatatan inventori lebih efisien dan efektif dimulai dari
+              AgloStock
             </div>
-            
+
             <div className="flex items-center space-x-2 bg-white text-green-800 p-2 rounded-md shadow-sm cursor-pointer">
               <FaUpload className="text-lg" />
               <Link to="/produk" className="text-sm font-medium underline">
@@ -59,16 +63,19 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-  
+
         {/* Notification Bar */}
         <div className="bg-green-200 p-3 rounded-lg shadow-md flex items-center">
           <FaExclamationTriangle className="text-green-800 mr-2" />
           <p className="text-sm text-green-800 flex-1">
-            Manfaatkan fitur lebih maksimal dengan verifikasi nomor handphonemu sekarang!
-            <a href="#" className="text-yellow-600 font-semibold ml-1">Verifikasi Sekarang</a>
+            Manfaatkan fitur lebih maksimal dengan verifikasi nomor handphonemu
+            sekarang!
+            <a href="#" className="text-yellow-600 font-semibold ml-1">
+              Verifikasi Sekarang
+            </a>
           </p>
         </div>
-  
+
         {/* Main Dashboard Content */}
         <div className="space-y-6">
           {/* Performa Stock Section */}
@@ -84,7 +91,8 @@ const Dashboard = () => {
               Total Barang Masuk: <span className="text-4xl">{totalStock}</span>
             </div>
           </div>
-  
+          
+
           {/* Popular Product and Non-Productive Stock Section - Two Columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Popular Product */}
@@ -115,10 +123,14 @@ const Dashboard = () => {
                 </tbody>
               </table>
             </div>
-  
+
+            <ProductChart products={products} />
+
             {/* Non-Productive Stock */}
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-lg font-semibold mb-4">Stok Tidak Produktif</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                Stok Tidak Produktif
+              </h2>
               <table className="w-full text-left text-gray-500">
                 <thead>
                   <tr>
@@ -137,14 +149,15 @@ const Dashboard = () => {
                 </tbody>
               </table>
             </div>
-  
+
+
           </div>
         </div>
       </div>
     );
   }
 
-  if (role == "user"){
+  if (role == "user") {
     return (
       <div className="p-6 bg-gray-100 min-h-screen space-y-4">
         {/* Header Section */}
@@ -153,21 +166,24 @@ const Dashboard = () => {
           <p className="mt-1 text-sm">Telah Bergabung dengan Tim AgloStock</p>
           <div className="flex items-center justify-between mt-4">
             <div className="text-base font-light">
-              Pencatatan inventori lebih efisien dan efektif dimulai dari AgloStock
+              Pencatatan inventori lebih efisien dan efektif dimulai dari
+              AgloStock
             </div>
-            
           </div>
         </div>
-  
+
         {/* Notification Bar */}
         <div className="bg-green-200 p-3 rounded-lg shadow-md flex items-center">
           <FaExclamationTriangle className="text-green-800 mr-2" />
           <p className="text-sm text-green-800 flex-1">
-            Manfaatkan fitur lebih maksimal dengan verifikasi nomor handphonemu sekarang!
-            <a href="#" className="text-yellow-600 font-semibold ml-1">Verifikasi Sekarang</a>
+            Manfaatkan fitur lebih maksimal dengan verifikasi nomor handphonemu
+            sekarang!
+            <a href="#" className="text-yellow-600 font-semibold ml-1">
+              Verifikasi Sekarang
+            </a>
           </p>
         </div>
-  
+
         {/* Main Dashboard Content */}
         <div className="space-y-6">
           {/* Performa Stock Section */}
@@ -183,7 +199,7 @@ const Dashboard = () => {
               Total Barang Masuk: <span className="text-4xl">{totalStock}</span>
             </div>
           </div>
-  
+
           {/* Popular Product and Non-Productive Stock Section - Two Columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Popular Product */}
@@ -205,10 +221,12 @@ const Dashboard = () => {
                 </tbody>
               </table>
             </div>
-  
+
             {/* Non-Productive Stock */}
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-lg font-semibold mb-4">Stok Tidak Produktif</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                Stok Tidak Produktif
+              </h2>
               <table className="w-full text-left text-gray-500">
                 <thead>
                   <tr>
@@ -227,14 +245,11 @@ const Dashboard = () => {
                 </tbody>
               </table>
             </div>
-  
           </div>
         </div>
       </div>
     );
   }
-
-  
 };
 
 export default Dashboard;
