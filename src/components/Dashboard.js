@@ -11,7 +11,7 @@ const Dashboard = () => {
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [role, setRole] = useState(localStorage.getItem("role") || "");
 
-  const fetchProducts = async () => {
+  const fetchProducts = async () => { //dashboard
     try {
       const response = await axios.get("http://localhost:5000/api/products");
       setProducts(response.data);
@@ -250,6 +250,6 @@ const Dashboard = () => {
       </div>
     );
   }
-};
+};   
 
 export default Dashboard;
