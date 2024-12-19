@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
-import axios from "axios";
 import loginImage from "../assets/loginImage.png";
 import logoIcon from "../assets/logoicon.png";
 
@@ -13,77 +12,19 @@ const Login = () => {
     email: "",
     password: "",
   });
-  // State untuk pesan error di setiap field
-  const [fieldErrors, setFieldErrors] = useState({
-    email: "",
-    password: "",
-  });
-
-  // State untuk pesan error
-  const [successMessage, setSuccessMessage] = useState("");
-  const [showModal, setShowModal] = useState(false);
 
   // Handle perubahan input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-
-    // Hapus error untuk field yang diisi ulang
-    setFieldErrors({ ...fieldErrors, [name]: "" });
   };
 
-  // Handle submit form
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent page reload on form submit
 
-    // Validasi input kosong
-    let errors = {};
-    if (!formData.email) {
-      errors.email = "Email is required.";
-    }
-    if (!formData.password) {
-      errors.password = "Password is required.";
-    }
-
-    // Jika ada error, set state dan hentikan proses
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    try {
-      // Kirim data ke backend
-      const response = await axios.post(
-        "http://localhost:5000/api/users/login",
-        {
-          email: formData.email,
-          password: formData.password,
-        }
-      );
-
-      // Store the token in localStorage (or sessionStorage)
-      localStorage.setItem('token', response.data.token);
-      
-      // Store the role in localStorage (or sessionStorage)
-      localStorage.setItem('role', response.data.role);
-
-      // Store userID in localStorage
-      localStorage.setItem("userId", response.data.userId);
-
-      // Jika login berhasil
-      setSuccessMessage(response.data.message); // Simpan pesan sukses
-      setShowModal(true); // Tampilkan modal
-      setTimeout(() => {
-        setShowModal(false); // Tutup modal setelah 3 detik
-        navigate("/dashboard"); // Redirect ke dashboard
-      }, 3000);
-    } catch (err) {
-      // Tangani error dari backend
-      setFieldErrors({
-        email: "",
-        password: err.response?.data?.error || "Invalid credentials.",
-      });
-    }
+    // Menavigasi langsung ke /dashboard tanpa pemeriksaan input
+    navigate("/dashboard");
   };
 
   return (
@@ -113,7 +54,7 @@ const Login = () => {
             </NavLink>
           </div>
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div className="relative flex flex-col">
               <div className="flex items-center bg-white shadow-md rounded-full h-[50px] px-4 border border-gray-200">
@@ -127,12 +68,6 @@ const Login = () => {
                   className="w-full h-full pl-2 pr-4 text-gray-600 focus:outline-none rounded-full"
                 />
               </div>
-              {/* Error Message for Email (Baru Ditambahkan) */}
-              {fieldErrors.email && (
-                <p className="text-red-500 text-sm ml-2 pl-2 w-[150px] text-left">
-                  {fieldErrors.email}
-                </p>
-              )}
             </div>
 
             {/* Password Input */}
@@ -148,12 +83,6 @@ const Login = () => {
                   className="w-full h-full pl-2 pr-4 text-gray-600 focus:outline-none rounded-full"
                 />
               </div>
-              {/* Error Message for Password (Baru Ditambahkan) */}
-              {fieldErrors.password && (
-                <p className="text-red-500 text-sm ml-2 pl-2 w-[150px] text-left">
-                  {fieldErrors.password}
-                </p>
-              )}
             </div>
 
             {/* Forgot Password */}
@@ -180,21 +109,6 @@ const Login = () => {
           />
         </div>
       </div>
-
-      {/* Modal untuk pesan sukses */}
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-green-700 text-2xl font-semibold mb-4">
-              Success!
-            </h2>
-            <p className="text-gray-600">{successMessage}</p>
-            <p className="text-sm text-gray-500 mt-4">
-              Redirecting to dashboard...
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
