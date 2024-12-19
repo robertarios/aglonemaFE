@@ -24,7 +24,7 @@ const Login = () => {
     e.preventDefault(); // Prevent page reload on form submit
 
     // Menavigasi langsung ke /dashboard tanpa pemeriksaan input
-    navigate("/dashboard");
+    navigate("/produk");
   };
 
   return (
